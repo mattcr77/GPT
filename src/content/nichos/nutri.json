@@ -1,0 +1,7 @@
+{
+  "dores_comuns": ["Demora para responder dúvidas sobre acompanhamento", "Leads frios sem reativação", "Perda de consulta por falta de lembrete"],
+  "objecoes_comuns": ["Meu atendimento é muito personalizado", "Prefiro responder tudo pessoalmente"],
+  "respostas_eticas": ["Personalização continua com você; automação cobre triagem e rotina", "Você assume quando necessário; o fluxo evita silêncio com o lead"],
+  "perguntas_qualificacao": ["Qual perfil de paciente gera maior retenção?", "Quantos leads pedem informações e somem por mês?"],
+  "cta_agendamento": "Posso te mostrar um fluxo enxuto para aumentar comparecimento sem perder personalização?"
+}

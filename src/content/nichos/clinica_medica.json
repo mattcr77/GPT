@@ -1,0 +1,7 @@
+{
+  "dores_comuns": ["Demora de retorno em horários de pico", "Triagem manual inconsistente", "Reagendamentos demorados"],
+  "objecoes_comuns": ["Já uso sistema de gestão", "Tenho receio com LGPD"],
+  "respostas_eticas": ["Integramos com processo atual sem trocar seu sistema", "Fluxo mínimo de dados e supervisão humana para conformidade"],
+  "perguntas_qualificacao": ["Qual especialidade concentra maior fila de mensagens?", "Como ocorre escalonamento para urgência?"],
+  "cta_agendamento": "Vamos validar em 20 minutos quais pontos podem ganhar velocidade sem risco operacional?"
+}

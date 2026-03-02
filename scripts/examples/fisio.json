@@ -1,0 +1,8 @@
+{
+  "modo": "ultraconservador",
+  "lead": {"nome_clinica": "MoviFisio", "nome_decisor": "", "whatsapp": "21988888888", "cidade": "Rio de Janeiro", "nicho": "fisio"},
+  "operacao_atual": {"horario_atendimento": "07:00-20:00", "tempo_medio_resposta_min": 25, "quem_responde": "outros", "canais": ["whatsapp", "site"]},
+  "numeros": {"conversao_atual_pct": 7, "ticket_medio": 220},
+  "objetivo": {"meta_agendamentos_mes": 50, "restricoes": ["pouco tempo"]},
+  "observacoes_livres": "Alta demanda em horários de pico."
+}

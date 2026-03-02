@@ -1,0 +1,10 @@
+{
+  "assumptions": [
+    {
+      "campo": "conversao_atual_pct",
+      "valor_assumido": 8,
+      "faixa": "5-12",
+      "como_validar": "Leads qualificados / agendamentos"
+    }
+  ]
+}

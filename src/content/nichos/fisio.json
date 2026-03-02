@@ -1,0 +1,7 @@
+{
+  "dores_comuns": ["Leads de dor aguda sem resposta imediata", "Agenda fragmentada em múltiplos canais", "Baixa confirmação pré-sessão"],
+  "objecoes_comuns": ["Meu volume é pequeno", "Não tenho tempo para mudar processo"],
+  "respostas_eticas": ["Mesmo com volume pequeno, a resposta rápida evita perda de casos quentes", "Implementação pode ser gradual com rotina semanal curta"],
+  "perguntas_qualificacao": ["Quais horários ficam ociosos com frequência?", "Qual taxa de retorno para segunda sessão?"],
+  "cta_agendamento": "Fechamos uma conversa curta para desenhar um fluxo simples com sua equipe?"
+}

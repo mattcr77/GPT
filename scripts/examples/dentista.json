@@ -1,0 +1,8 @@
+{
+  "modo": "ultraconservador",
+  "lead": {"nome_clinica": "Sorriso Prime", "nome_decisor": "Dra. Paula", "whatsapp": "11999999999", "cidade": "São Paulo", "nicho": "dentista"},
+  "operacao_atual": {"horario_atendimento": "08:00-19:00", "tempo_medio_resposta_min": 45, "quem_responde": "secretaria", "canais": ["whatsapp", "instagram"]},
+  "numeros": {"leads_mes": 120, "ticket_medio": 350, "no_show_pct": 15},
+  "objetivo": {"meta_agendamentos_mes": 65, "restricoes": ["sem tráfego"]},
+  "observacoes_livres": "Equipe reduzida no período da tarde."
+}

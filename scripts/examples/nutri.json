@@ -1,0 +1,8 @@
+{
+  "modo": "ultraconservador",
+  "lead": {"nome_clinica": "NutriVida", "nome_decisor": "Dra. Carol", "whatsapp": "31977777777", "cidade": "Belo Horizonte", "nicho": "nutri"},
+  "operacao_atual": {"horario_atendimento": "09:00-18:00", "tempo_medio_resposta_min": 90, "quem_responde": "dono", "canais": ["whatsapp", "instagram", "site"]},
+  "numeros": {"leads_mes": 70, "conversao_atual_pct": 9, "agendamentos_mes": 6},
+  "objetivo": {"meta_agendamentos_mes": 20, "restricoes": ["sem equipe extra"]},
+  "observacoes_livres": "Deseja manter tom pessoal no atendimento."
+}
