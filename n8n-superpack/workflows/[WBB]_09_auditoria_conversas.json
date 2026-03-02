@@ -1,0 +1,318 @@
+{
+  "name": "[WBB] 09 - Auditoria de Conversas (Amostragem)",
+  "nodes": [
+    {
+      "id": "13d8c469-7d11-4d8a-9cb4-a81380b08cdb",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        200,
+        300
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "wbb-auditoria",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "notes": "Entrada principal com tenant_id/token/numero para resolver cliente."
+    },
+    {
+      "id": "2d3bbb2a-afaf-4ebe-8861-bdc87be68d1b",
+      "name": "Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        170,
+        70
+      ],
+      "parameters": {
+        "width": 420,
+        "height": 160,
+        "content": "Workflow 09: Auditoria de Conversas (Amostragem). Multi-tenant + logs + mock mode via variáveis."
+      }
+    },
+    {
+      "id": "2f896c3c-fbcc-4c89-9dbd-903db1c7608c",
+      "name": "Load Tenant Config (Mock/Supabase)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        430,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "\nconst payload = $json;\nconst defaults = {\n  tenant_id: payload.tenant_id || 'demo_clinica',\n  nome: 'Clínica Demo',\n  timezone: 'America/Sao_Paulo',\n  numero_whatsapp: '+5511999999999',\n  horario_atendimento: { inicio: '08:00', fim: '18:00', dias: [1,2,3,4,5,6] },\n  regras_nicho: { nicho: 'clinica_odontologica', perguntas: ['procedimento','urgencia','convenio','horario_preferido'] },\n  destino_notificacao: { canal: 'telegram', endpoint: $env.NOTIFICATION_WEBHOOK_URL || 'https://example.invalid/notify' },\n  links_agenda: { principal: 'https://agenda.exemplo.com/tenant/demo_clinica' },\n  limites_followup: { max_tentativas: 3, horas_entre_tentativas: 24 }\n};\nreturn [{...payload, tenant: defaults, tenant_id: defaults.tenant_id}];\n"
+      },
+      "notes": "Mock local. Em produção, trocar por Supabase REST (HTTP Request) em tabela tenants_config."
+    },
+    {
+      "id": "d76e64c2-c948-4c41-9dce-d8805037dc58",
+      "name": "Normalize Payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        650,
+        300
+      ],
+      "parameters": {
+        "keepOnlySet": false,
+        "values": {
+          "string": [
+            {
+              "name": "timestamp",
+              "value": "={{$now}}"
+            },
+            {
+              "name": "tenant_id",
+              "value": "={{$json.tenant_id}}"
+            },
+            {
+              "name": "lead_id",
+              "value": "={{$json.lead_id || $json.phone || $json.chat_id || $json.id || $execution.id}}"
+            },
+            {
+              "name": "canal_origem",
+              "value": "={{$json.canal_origem || \"whatsapp\"}}"
+            },
+            {
+              "name": "evento",
+              "value": "=auditoria"
+            },
+            {
+              "name": "nome",
+              "value": "={{$json.nome || $json.contact_name || \"\"}}"
+            },
+            {
+              "name": "telefone",
+              "value": "={{$json.telefone || $json.phone || \"\"}}"
+            },
+            {
+              "name": "mensagem",
+              "value": "={{$json.mensagem || $json.message || \"\"}}"
+            },
+            {
+              "name": "metadata",
+              "value": "={{$json}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "74c56431-941d-4c27-93d1-b31ca7d20bc9",
+      "name": "Business Rules",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        860,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return items;"
+      }
+    },
+    {
+      "id": "73745ce3-18f4-4e24-bfa0-862d513930fe",
+      "name": "Notify Team",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        870,
+        470
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{$json.tenant?.destino_notificacao?.endpoint || $env.NOTIFICATION_WEBHOOK_URL || \"https://example.invalid/notify\"}}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\"tenant_id\": $json.tenant_id, \"workflow\": $workflow.name, \"lead_id\": $json.lead_id, \"status\": $json.status || \"novo_evento\", \"resumo\": $json.mensagem || $json.evento} }}"
+      },
+      "notes": "Canal pode ser Telegram/Slack/WhatsApp webhook."
+    },
+    {
+      "id": "d65ebfc8-2f47-4c09-9ab1-ee2585663684",
+      "name": "Build Log Record",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1060,
+        300
+      ],
+      "parameters": {
+        "keepOnlySet": false,
+        "values": {
+          "string": [
+            {
+              "name": "log_timestamp",
+              "value": "={{$now}}"
+            },
+            {
+              "name": "log_evento",
+              "value": "={{$json.evento || $workflow.name}}"
+            },
+            {
+              "name": "log_status",
+              "value": "ok"
+            },
+            {
+              "name": "log_erro",
+              "value": "={{$json.error || \"\"}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "06320492-84a2-4bc5-85cb-6c590c5e5d03",
+      "name": "Log Sink (Supabase REST)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1240,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL ? $env.SUPABASE_URL + \"/rest/v1/wbb_logs\" : \"https://example.invalid/rest/v1/wbb_logs\"}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$env.SUPABASE_SERVICE_ROLE_KEY || \"mock-key\"}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "={{\"Bearer \" + ($env.SUPABASE_SERVICE_ROLE_KEY || \"mock-key\")}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\"timestamp\": $json.log_timestamp, \"tenant_id\": $json.tenant_id, \"lead_id\": $json.lead_id, \"evento\": $json.log_evento, \"status\": $json.log_status, \"erro\": $json.log_erro, \"metadata\": $json.metadata || $json } }}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "notes": "Sem credencial, use MOCK_MODE=true e ignore resposta."
+    },
+    {
+      "id": "9dcd4d41-8c62-4745-bb9a-a82da84346fa",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        300
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\"ok\": true, \"workflow\": $workflow.name, \"tenant_id\": $json.tenant_id || null} }}"
+      }
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Load Tenant Config (Mock/Supabase)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Tenant Config (Mock/Supabase)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Payload": {
+      "main": [
+        [
+          {
+            "node": "Business Rules",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notify Team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Business Rules": {
+      "main": [
+        [
+          {
+            "node": "Build Log Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Team": {
+      "main": [
+        [
+          {
+            "node": "Build Log Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Log Record": {
+      "main": [
+        [
+          {
+            "node": "Log Sink (Supabase REST)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Sink (Supabase REST)": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

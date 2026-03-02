@@ -1,0 +1,9 @@
+{
+  "tenant_id": "demo_clinica",
+  "lead_id": "lead_001",
+  "evento": "agendamento_criado",
+  "data_consulta": "2026-01-23",
+  "hora_consulta": "10:30",
+  "profissional": "Dra. Ana",
+  "status_confirmacao": "pendente"
+}
