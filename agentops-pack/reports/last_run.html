@@ -1,0 +1,139 @@
+
+    <html><head><meta charset='utf-8'><title>AgentOps Pack Report</title>
+    <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: 8px; vertical-align: top; }
+    th { background: #f3f3f3; }
+    </style></head><body>
+    <h1>Relatório AgentOps</h1>
+    <p><b>Média:</b> 87.2 | <b>Cenários:</b> 12</p>
+    <h2>Top 5 problemas recorrentes</h2><ol><li>faltou_qualificacao:urgencia,convenio: 8</li><li>faltou_qualificacao:urgencia: 2</li><li>faltou_qualificacao:procedimento,urgencia,convenio,horario: 2</li><li>sem_cta: 2</li></ol>
+    <h2>Ações recomendadas</h2><ol><li>Coletar dados mínimos: nome, procedimento, urgência, convênio e horário.</li><li>Adicionar CTA claro de agendamento com opções de horário.</li></ol>
+    <h2>Detalhamento por cenário</h2>
+    <table>
+    <tr><th>ID</th><th>Nicho</th><th>Suite</th><th>Score</th><th>Flags</th><th>Expected</th><th>Observed</th></tr>
+    
+        <tr>
+          <td>dentista_001_lead_quente_preco</td>
+          <td>dentista</td>
+          <td>smoke</td>
+          <td><b>90</b></td>
+          <td>faltou_qualificacao:urgencia,convenio</td>
+          <td><small>coleta_dados+cta+compliance</small></td>
+          <td><small>nome=True, procedimento=True, urgencia=False, convenio=False, horario=True, cta=True</small></td>
+        </tr>
+        
+        <tr>
+          <td>dentista_002_agendar_hoje</td>
+          <td>dentista</td>
+          <td>smoke</td>
+          <td><b>90</b></td>
+          <td>faltou_qualificacao:urgencia,convenio</td>
+          <td><small>coleta_dados+cta+compliance</small></td>
+          <td><small>nome=True, procedimento=True, urgencia=False, convenio=False, horario=True, cta=True</small></td>
+        </tr>
+        
+        <tr>
+          <td>dentista_003_convenio</td>
+          <td>dentista</td>
+          <td>smoke</td>
+          <td><b>90</b></td>
+          <td>faltou_qualificacao:urgencia,convenio</td>
+          <td><small>coleta_dados+cta+compliance</small></td>
+          <td><small>nome=True, procedimento=True, urgencia=False, convenio=False, horario=True, cta=True</small></td>
+        </tr>
+        
+        <tr>
+          <td>dentista_004_objecao_caro</td>
+          <td>dentista</td>
+          <td>smoke</td>
+          <td><b>95</b></td>
+          <td>faltou_qualificacao:urgencia</td>
+          <td><small>coleta_dados+cta+compliance</small></td>
+          <td><small>nome=True, procedimento=True, urgencia=False, convenio=True, horario=True, cta=True</small></td>
+        </tr>
+        
+        <tr>
+          <td>dentista_005_vou_pensar</td>
+          <td>dentista</td>
+          <td>smoke</td>
+          <td><b>90</b></td>
+          <td>faltou_qualificacao:urgencia,convenio</td>
+          <td><small>coleta_dados+cta+compliance</small></td>
+          <td><small>nome=True, procedimento=True, urgencia=False, convenio=False, horario=True, cta=True</small></td>
+        </tr>
+        
+        <tr>
+          <td>dentista_006_manda_whats</td>
+          <td>dentista</td>
+          <td>smoke</td>
+          <td><b>90</b></td>
+          <td>faltou_qualificacao:urgencia,convenio</td>
+          <td><small>coleta_dados+cta+compliance</small></td>
+          <td><small>nome=True, procedimento=True, urgencia=False, convenio=False, horario=True, cta=True</small></td>
+        </tr>
+        
+        <tr>
+          <td>dentista_007_fora_horario</td>
+          <td>dentista</td>
+          <td>smoke</td>
+          <td><b>90</b></td>
+          <td>faltou_qualificacao:urgencia,convenio</td>
+          <td><small>coleta_dados+cta+compliance</small></td>
+          <td><small>nome=True, procedimento=True, urgencia=False, convenio=False, horario=True, cta=True</small></td>
+        </tr>
+        
+        <tr>
+          <td>dentista_008_urgencia_dor</td>
+          <td>dentista</td>
+          <td>smoke</td>
+          <td><b>68</b></td>
+          <td>faltou_qualificacao:procedimento,urgencia,convenio,horario, sem_cta</td>
+          <td><small>coleta_dados+cta+compliance</small></td>
+          <td><small>nome=True, procedimento=False, urgencia=False, convenio=False, horario=False, cta=False</small></td>
+        </tr>
+        
+        <tr>
+          <td>dentista_009_pedido_humano</td>
+          <td>dentista</td>
+          <td>smoke</td>
+          <td><b>68</b></td>
+          <td>faltou_qualificacao:procedimento,urgencia,convenio,horario, sem_cta</td>
+          <td><small>coleta_dados+cta+compliance</small></td>
+          <td><small>nome=True, procedimento=False, urgencia=False, convenio=False, horario=False, cta=False</small></td>
+        </tr>
+        
+        <tr>
+          <td>dentista_010_msg_curta_oi</td>
+          <td>dentista</td>
+          <td>smoke</td>
+          <td><b>90</b></td>
+          <td>faltou_qualificacao:urgencia,convenio</td>
+          <td><small>coleta_dados+cta+compliance</small></td>
+          <td><small>nome=True, procedimento=True, urgencia=False, convenio=False, horario=True, cta=True</small></td>
+        </tr>
+        
+        <tr>
+          <td>dentista_011_audio_sem_transcricao</td>
+          <td>dentista</td>
+          <td>smoke</td>
+          <td><b>90</b></td>
+          <td>faltou_qualificacao:urgencia,convenio</td>
+          <td><small>coleta_dados+cta+compliance</small></td>
+          <td><small>nome=True, procedimento=True, urgencia=False, convenio=False, horario=True, cta=True</small></td>
+        </tr>
+        
+        <tr>
+          <td>dentista_012_duplicado_lead</td>
+          <td>dentista</td>
+          <td>smoke</td>
+          <td><b>95</b></td>
+          <td>faltou_qualificacao:urgencia</td>
+          <td><small>coleta_dados+cta+compliance</small></td>
+          <td><small>nome=True, procedimento=True, urgencia=False, convenio=True, horario=True, cta=True</small></td>
+        </tr>
+        
+    </table>
+    </body></html>
+    

@@ -1,0 +1,13 @@
+id_cenario,resposta_agente
+clinica_medica_001_lead_quente_preco,"Posso te ajudar com agendamento. Qual seu nome, procedimento e melhor horário?"
+clinica_medica_002_agendar_hoje,"Posso te ajudar com agendamento. Qual seu nome, procedimento e melhor horário?"
+clinica_medica_003_convenio,"Posso te ajudar com agendamento. Qual seu nome, procedimento e melhor horário?"
+clinica_medica_004_objecao_caro,"Temos horários hoje à tarde e noite. Qual seu nome, procedimento desejado e se usa convênio?"
+clinica_medica_005_vou_pensar,"Posso te ajudar com agendamento. Qual seu nome, procedimento e melhor horário?"
+clinica_medica_006_manda_whats,"Posso te ajudar com agendamento. Qual seu nome, procedimento e melhor horário?"
+clinica_medica_007_fora_horario,"Posso te ajudar com agendamento. Qual seu nome, procedimento e melhor horário?"
+clinica_medica_008_urgencia_dor,Sinto muito. Vou te encaminhar para atendente humano agora. Qual seu nome e melhor telefone?
+clinica_medica_009_pedido_humano,Sinto muito. Vou te encaminhar para atendente humano agora. Qual seu nome e melhor telefone?
+clinica_medica_010_msg_curta_oi,"Posso te ajudar com agendamento. Qual seu nome, procedimento e melhor horário?"
+clinica_medica_011_audio_sem_transcricao,"Posso te ajudar com agendamento. Qual seu nome, procedimento e melhor horário?"
+clinica_medica_012_duplicado_lead,"Temos horários hoje à tarde e noite. Qual seu nome, procedimento desejado e se usa convênio?"

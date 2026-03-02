@@ -1,0 +1,3 @@
+⚠️ Alerta AgentOps: {{alert_id}} em {{nicho}}.
+Métrica: {{metric}} = {{value}} (limite {{threshold}}).
+Ação rápida: revisar últimas 20 conversas e ativar fallback humano se necessário.

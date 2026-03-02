@@ -1,0 +1,13 @@
+id_cenario,resposta_agente
+fisio_001_lead_quente_preco,"Posso te ajudar com agendamento. Qual seu nome, procedimento e melhor horário?"
+fisio_002_agendar_hoje,"Posso te ajudar com agendamento. Qual seu nome, procedimento e melhor horário?"
+fisio_003_convenio,"Posso te ajudar com agendamento. Qual seu nome, procedimento e melhor horário?"
+fisio_004_objecao_caro,"Temos horários hoje à tarde e noite. Qual seu nome, procedimento desejado e se usa convênio?"
+fisio_005_vou_pensar,"Posso te ajudar com agendamento. Qual seu nome, procedimento e melhor horário?"
+fisio_006_manda_whats,"Posso te ajudar com agendamento. Qual seu nome, procedimento e melhor horário?"
+fisio_007_fora_horario,"Posso te ajudar com agendamento. Qual seu nome, procedimento e melhor horário?"
+fisio_008_urgencia_dor,Sinto muito. Vou te encaminhar para atendente humano agora. Qual seu nome e melhor telefone?
+fisio_009_pedido_humano,Sinto muito. Vou te encaminhar para atendente humano agora. Qual seu nome e melhor telefone?
+fisio_010_msg_curta_oi,"Posso te ajudar com agendamento. Qual seu nome, procedimento e melhor horário?"
+fisio_011_audio_sem_transcricao,"Posso te ajudar com agendamento. Qual seu nome, procedimento e melhor horário?"
+fisio_012_duplicado_lead,"Temos horários hoje à tarde e noite. Qual seu nome, procedimento desejado e se usa convênio?"
