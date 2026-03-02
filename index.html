@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CPA™ — Calculadora de Performance do Atendimento | WaveBRAinBot</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #0a0e27;
+      --bg2: #050713;
+      --card: rgba(15, 20, 46, 0.8);
+      --border: rgba(255, 255, 255, 0.1);
+      --txt: #eaf0ff;
+      --muted: rgba(234, 240, 255, 0.74);
+      --lime: #bfff00;
+      --cyan: #00d9ff;
+      --gold: #ffd700;
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.44);
+      --radius: 22px;
+      --ease: cubic-bezier(0.2, 0.9, 0.2, 1);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--txt);
+      background:
+        radial-gradient(900px 520px at 10% 6%, rgba(0, 217, 255, 0.16), transparent 62%),
+        radial-gradient(900px 620px at 92% 10%, rgba(191, 255, 0, 0.12), transparent 62%),
+        radial-gradient(1200px 520px at 50% 115%, rgba(255, 215, 0, 0.08), transparent 65%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -200px;
+      background:
+        radial-gradient(700px 280px at 20% 20%, rgba(0, 217, 255, 0.06), transparent 60%),
+        radial-gradient(700px 280px at 80% 30%, rgba(191, 255, 0, 0.05), transparent 60%),
+        radial-gradient(900px 360px at 50% 85%, rgba(255, 215, 0, 0.04), transparent 65%);
+      filter: blur(12px);
+      opacity: 0.9;
+      animation: drift 10s var(--ease) infinite alternate;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    @keyframes drift {
+      from { transform: translate3d(-8px, -6px, 0) scale(1.02); }
+      to { transform: translate3d(8px, 6px, 0) scale(1.02); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+      html { scroll-behavior: auto !important; }
+    }
+
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 24px; }
+    .top {
+      display: flex;
+      gap: 14px;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    h1 { margin: 0; font-size: 30px; line-height: 1.15; font-weight: 950; }
+    .sub { margin-top: 10px; color: var(--lime); font-weight: 850; font-size: 15px; }
+    .note { margin-top: 8px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .quote { margin-top: 10px; font-weight: 850; font-size: 15px; }
+
+    .wbb {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid rgba(0, 217, 255, 0.22);
+      border-radius: 999px;
+      background: rgba(0, 217, 255, 0.08);
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, var(--lime), var(--cyan));
+      box-shadow: 0 0 0 6px rgba(0, 217, 255, 0.1);
+    }
+
+    .grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 16px; }
+    @media (min-width: 980px) { .grid { grid-template-columns: 1.15fr 0.85fr; } }
+
+    .card {
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .sectionTitle {
+      margin: 14px 0 10px;
+      font-size: 12px;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+      color: rgba(234, 240, 255, 0.6);
+      font-weight: 850;
+    }
+
+    .field { margin-bottom: 14px; }
+    label { display: block; margin-bottom: 8px; color: var(--muted); font-weight: 750; font-size: 14px; }
+
+    input, select {
+      width: 100%;
+      padding: 13px 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(0, 0, 0, 0.22);
+      color: var(--txt);
+      font-size: 14px;
+    }
+
+    input:focus, select:focus {
+      border-color: rgba(0, 217, 255, 0.55);
+      box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.18);
+      outline: none;
+    }
+
+    .micro { margin-top: 7px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .row { display: flex; justify-content: center; margin-top: 8px; }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .btn, .btnSecondary {
+      border-radius: 16px;
+      color: var(--txt);
+      font-weight: 900;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 12px 14px;
+    }
+
+    .btn {
+      width: 100%;
+      border: 1px solid rgba(191, 255, 0, 0.35);
+      background: rgba(191, 255, 0, 0.14);
+      font-weight: 950;
+      margin-top: 4px;
+    }
+
+    .actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin-top: 10px; }
+    .btnSecondary { border: 1px solid rgba(0, 217, 255, 0.28); background: rgba(0, 217, 255, 0.1); }
+
+    .results { display: grid; gap: 10px; }
+    .scenario {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.16);
+      border-radius: 18px;
+      padding: 12px;
+    }
+
+    .hero { border-color: rgba(0, 217, 255, 0.25); }
+
+    .scenario .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .name { font-size: 14px; font-weight: 950; }
+    .tag {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--muted);
+    }
+
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.12);
+      padding: 9px 0;
+    }
+
+    .metric:first-of-type { border-top: none; }
+    .k { color: var(--muted); font-size: 13px; }
+    .v { font-weight: 900; font-size: 14px; text-align: right; }
+
+    .split { display: grid; gap: 10px; grid-template-columns: 1fr; }
+    @media (min-width: 760px) { .split { grid-template-columns: 1fr 1fr; } }
+
+    .barWrap { border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 18px; padding: 12px; }
+    .barRow { display: grid; grid-template-columns: 92px 1fr 120px; gap: 10px; align-items: center; margin-bottom: 8px; }
+    .barTrack { height: 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
+    .barFill { height: 100%; width: 0; transition: width 650ms var(--ease); }
+
+    .interpret, .premises {
+      border: 1px solid rgba(0, 217, 255, 0.18);
+      background: rgba(0, 217, 255, 0.08);
+      border-radius: 16px;
+      padding: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .cta a {
+      display: block;
+      text-align: center;
+      margin-top: 8px;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(0, 217, 255, 0.35);
+      background: rgba(0, 217, 255, 0.18);
+      color: var(--txt);
+      text-decoration: none;
+      font-weight: 950;
+    }
+
+    .closing { margin-top: 10px; text-align: center; font-weight: 950; }
+    .errorBanner {
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: rgba(255, 0, 0, 0.12);
+      border: 1px solid rgba(255, 0, 0, 0.18);
+      border-radius: 10px;
+      color: #ffdcdc;
+      font-weight: 700;
+    }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1>CPA™ — Calculadora de Performance do Atendimento</h1>
+        <div class="sub">Eficiência operacional convertida em números.</div>
+        <div class="note">Estimativas baseadas nas informações fornecidas.</div>
+        <div class="quote">Entre a oportunidade e a venda existe o tempo.</div>
+      </div>
+      <div class="wbb" title="WaveBRAinBot • Neural Performance Intelligence">
+        <span class="dot"></span>
+        <b>WaveBRAinBot</b>
+        <span style="opacity:0.65">Neural Performance Intelligence</span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Dados</h2>
+
+        <div class="sectionTitle">Essenciais</div>
+        <div class="field">
+          <label for="segmento">Qual é o seu segmento?</label>
+          <select id="segmento">
+            <option value="clinica" selected>Clínicas / Saúde</option>
+            <option value="imobiliaria">Imobiliária</option>
+            <option value="advocacia">Escritório de Advocacia</option>
+            <option value="concessionaria">Concessionária</option>
+            <option value="educacao">Escola / Cursos</option>
+            <option value="outros">Outros</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="contatos">Quantas pessoas pedem agendamento, orçamento ou compra por mês?</label>
+          <input id="contatos" type="number" min="0" step="1" placeholder="Ex.: 120" />
+        </div>
+
+        <div class="field">
+          <label for="ticket">Em média, quanto vale uma venda fechada? (R$)</label>
+          <input id="ticket" type="number" min="0" step="1" placeholder="Ex.: 700" />
+        </div>
+
+        <div class="field">
+          <label for="tempo">Você responde em média quanto tempo?</label>
+          <select id="tempo">
+            <option value="5m">Em até 5 minutos</option>
+            <option value="30m" selected>Até 30 minutos</option>
+            <option value="3h">Entre 1 e 3 horas</option>
+            <option value="6h">Depois de algumas horas</option>
+            <option value="24h">No dia seguinte ou mais</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="foraHorario">Se alguém entrar em contato à noite ou no fim de semana, o que acontece?</label>
+          <select id="foraHorario">
+            <option value="agora">Recebe resposta na hora</option>
+            <option value="comercial" selected>Recebe resposta no próximo horário comercial</option>
+            <option value="diaSeguinte">Pode demorar até o dia seguinte</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="percepcao">Você sente que perde clientes por demora?</label>
+          <select id="percepcao">
+            <option value="baixa">Raramente</option>
+            <option value="media" selected>Às vezes</option>
+            <option value="alta">Sim, com frequência</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <label class="toggle" title="Reduz as estimativas em 25% para um cenário mais prudente">
+            <input id="ultra" type="checkbox" />
+            <span><b>Modo Ultraconservador</b></span>
+          </label>
+        </div>
+
+        <div class="sectionTitle">Opcionais</div>
+        <div class="field">
+          <label for="anuncios">Você investe em anúncios?</label>
+          <select id="anuncios">
+            <option value="0" selected>Não</option>
+            <option value="1">Às vezes</option>
+            <option value="2">Sim, todo mês</option>
+          </select>
+        </div>
+
+        <div class="field hidden" id="adsBox">
+          <label for="investAds">Quanto você investe por mês em anúncios? (R$)</label>
+          <input id="investAds" type="number" min="0" step="1" placeholder="Ex.: 3000" />
+        </div>
+
+        <div class="field">
+          <label for="planoPacote">Plano de referência</label>
+          <select id="planoPacote">
+            <option value="0" selected>Prefiro não considerar agora</option>
+            <option value="essencial">Essencial — R$ 799/mês + R$ 700 setup</option>
+            <option value="performance">Performance — R$ 1.499/mês + R$ 1.000 setup</option>
+            <option value="automation">Automation — R$ 2.499/mês + R$ 1.400 setup</option>
+          </select>
+        </div>
+
+        <button class="btn" id="btnCalcular">Calcular desempenho</button>
+
+        <div class="actions">
+          <button class="btnSecondary" id="btnCopiarCurto">Copiar resumo curto</button>
+          <button class="btnSecondary" id="btnCopiarCompleto">Copiar resumo completo</button>
+          <button class="btnSecondary" id="btnSalvarPDF">Salvar em PDF</button>
+        </div>
+
+        <div id="errorContainer"></div>
+      </div>
+
+      <div class="card" id="cardResultado">
+        <h2>Resultado</h2>
+        <div id="out" class="results">
+          <div class="interpret">Preencha os dados e clique em <b>Calcular desempenho</b>.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="closing">Resultado não é sorte. É processo.</div>
+  </div>
+
+  <script>
+    (() => {
+      const WA_NUMBER = "5513996663009";
+      const WA_MESSAGE = "Usei a CPA™ e quero confirmar meu diagnóstico em uma reunião estratégica.";
+
+      const PACOTES = {
+        essencial: { mensal: 799, setup: 700, nome: "Essencial" },
+        performance: { mensal: 1499, setup: 1000, nome: "Performance" },
+        automation: { mensal: 2499, setup: 1400, nome: "Automation" }
+      };
+
+      const BASES = {
+        clinica: { min: 0.02, exp: 0.04, pot: 0.07 },
+        imobiliaria: { min: 0.005, exp: 0.01, pot: 0.02 },
+        advocacia: { min: 0.02, exp: 0.04, pot: 0.07 },
+        concessionaria: { min: 0.01, exp: 0.02, pot: 0.04 },
+        educacao: { min: 0.02, exp: 0.05, pot: 0.08 },
+        outros: { min: 0.02, exp: 0.04, pot: 0.06 }
+      };
+
+      const RESPONSE_FACTORS = {
+        "5m": 0.1,
+        "30m": 0.35,
+        "3h": 0.58,
+        "6h": 0.74,
+        "24h": 1
+      };
+
+      const OFF_HOURS_FACTORS = {
+        agora: 0,
+        comercial: 0.18,
+        diaSeguinte: 0.32
+      };
+
+      const PERCEPTION_FACTORS = {
+        baixa: 0,
+        media: 0.1,
+        alta: 0.2
+      };
+
+      const el = {
+        segmento: document.getElementById("segmento"),
+        contatos: document.getElementById("contatos"),
+        ticket: document.getElementById("ticket"),
+        tempo: document.getElementById("tempo"),
+        foraHorario: document.getElementById("foraHorario"),
+        percepcao: document.getElementById("percepcao"),
+        ultra: document.getElementById("ultra"),
+        anuncios: document.getElementById("anuncios"),
+        investAds: document.getElementById("investAds"),
+        adsBox: document.getElementById("adsBox"),
+        planoPacote: document.getElementById("planoPacote"),
+        btnCalcular: document.getElementById("btnCalcular"),
+        btnCopiarCurto: document.getElementById("btnCopiarCurto"),
+        btnCopiarCompleto: document.getElementById("btnCopiarCompleto"),
+        btnSalvarPDF: document.getElementById("btnSalvarPDF"),
+        out: document.getElementById("out"),
+        errorContainer: document.getElementById("errorContainer"),
+        cardResultado: document.getElementById("cardResultado")
+      };
+
+      const CURRENCY = new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        maximumFractionDigits: 0
+      });
+
+      let LAST = null;
+
+      const formatBRL = (n) => CURRENCY.format(Math.round(n));
+      const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+      const asNumber = (v) => Number(v || 0);
+
+      function approxText(n) {
+        const abs = Math.abs(n);
+        if (abs < 1000) return "";
+        if (abs >= 1_000_000) {
+          return `≈ ${(abs / 1_000_000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mi`;
+        }
+        return `≈ ${(abs / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mil`;
+      }
+
+      function showError(message, timeout = 4200) {
+        el.errorContainer.innerHTML = `<div class="errorBanner" role="alert">${message}</div>`;
+        clearTimeout(showError._tid);
+        showError._tid = setTimeout(() => {
+          el.errorContainer.innerHTML = "";
+        }, timeout);
+      }
+
+      function copyWithFallback(text) {
+        const manualCopy = () => {
+          const result = window.prompt("Copie manualmente:", text);
+          if (result === null) {
+            showError("Cópia cancelada.");
+            return;
+          }
+          showError("Copiado.");
+        };
+
+        if (!navigator.clipboard) {
+          showError("Não foi possível copiar automaticamente.");
+          manualCopy();
+          return;
+        }
+
+        navigator.clipboard.writeText(text).then(
+          () => showError("Copiado."),
+          () => {
+            showError("Não foi possível copiar automaticamente.");
+            manualCopy();
+          }
+        );
+      }
+
+      function faixaAnuncios(invest, leadLossFactor) {
+        const desperdBase = clamp(0.1 + leadLossFactor * 0.42, 0.1, 0.42);
+        const aproveitBase = clamp(0.06 + leadLossFactor * 0.3, 0.06, 0.3);
+
+        return {
+          desperdMin: invest * clamp(desperdBase * 0.75, 0.08, 0.4),
+          desperdMax: invest * clamp(desperdBase * 1.15, 0.12, 0.46),
+          aproveitMin: invest * clamp(aproveitBase * 0.75, 0.05, 0.25),
+          aproveitMax: invest * clamp(aproveitBase * 1.15, 0.08, 0.33)
+        };
+      }
+
+      function buildMetric(label, value, colorClass = "") {
+        const approx = approxText(value);
+        return `
+          <div class="metric">
+            <div class="k">${label}</div>
+            <div class="v ${colorClass}">
+              ${formatBRL(value)}
+              ${approx ? `<div style="font-size:12px;color:rgba(234,240,255,.65)">(${approx})</div>` : ""}
+            </div>
+          </div>
+        `;
+      }
+
+      function calcLeadLossFactor() {
+        const tempoFactor = RESPONSE_FACTORS[el.tempo.value] ?? 0.35;
+        const offHoursFactor = OFF_HOURS_FACTORS[el.foraHorario.value] ?? 0.18;
+        const perceptionFactor = PERCEPTION_FACTORS[el.percepcao.value] ?? 0.1;
+
+        // Modelo inspirado em Speed-to-Lead: tempo de resposta tem maior peso.
+        let combined = tempoFactor * 0.62 + offHoursFactor * 0.23 + perceptionFactor * 0.15;
+        if (el.ultra.checked) combined *= 0.75;
+        return clamp(combined, 0.04, 0.9);
+      }
+
+      function computeScenarios(inputs) {
+        const { seg, contatos, ticket, pacote, adsMode, investAds } = inputs;
+        const bases = BASES[seg] || BASES.outros;
+        const leadLossFactor = calcLeadLossFactor();
+
+        const scales = { min: 0.7, exp: 1.0, pot: 1.3 };
+
+        function calcScenario(label, baseRate, scale) {
+          const baseReceita = contatos * baseRate * ticket;
+          const recuperavelMes = baseReceita * leadLossFactor * scale;
+          const recuperavelAno = recuperavelMes * 12;
+          const primeiroMes = recuperavelMes - pacote.mensal - pacote.setup;
+          const segundoMes = recuperavelMes - pacote.mensal;
+          const ano1 = recuperavelAno - pacote.mensal * 12 - pacote.setup;
+
+          return {
+            label,
+            recuperavelMes,
+            recuperavelAno,
+            primeiroMes,
+            segundoMes,
+            ano1,
+            adsFaixa: adsMode > 0 && investAds > 0 ? faixaAnuncios(investAds, leadLossFactor * scale) : null
+          };
+        }
+
+        return {
+          leadLossFactor,
+          min: calcScenario("Mínimo", bases.min, scales.min),
+          exp: calcScenario("Esperado", bases.exp, scales.exp),
+          pot: calcScenario("Potencial", bases.pot, scales.pot)
+        };
+      }
+
+      function renderScenario(s, pacoteKey, colorClass, hero = false) {
+        const plano = pacoteKey === "0"
+          ? `
+            <div class="metric"><div class="k">Primeiro mês (plano + setup)</div><div class="v">Selecione um plano</div></div>
+            <div class="metric"><div class="k">A partir do 2º mês</div><div class="v">—</div></div>
+            <div class="metric"><div class="k">Ano 1 (plano + setup)</div><div class="v">—</div></div>
+          `
+          : `
+            ${buildMetric("Primeiro mês (plano + setup)", s.primeiroMes)}
+            ${buildMetric("A partir do 2º mês", s.segundoMes)}
+            ${buildMetric("Ano 1 (plano + setup)", s.ano1)}
+          `;
+
+        const ads = !s.adsFaixa ? "" : `
+          <div class="metric"><div class="k">Anúncios: desperdício provável por demora (mês)</div><div class="v">${formatBRL(s.adsFaixa.desperdMin)} a ${formatBRL(s.adsFaixa.desperdMax)}</div></div>
+          <div class="metric"><div class="k">Anúncios: aproveitamento possível com resposta imediata (mês)</div><div class="v">${formatBRL(s.adsFaixa.aproveitMin)} a ${formatBRL(s.adsFaixa.aproveitMax)}</div></div>
+        `;
+
+        return `
+          <div class="scenario ${hero ? "hero" : ""}">
+            <div class="head">
+              <div class="name">${hero ? `${s.label} (principal)` : s.label}</div>
+              <div class="tag">${hero ? "cenário principal" : "faixa estimada"}</div>
+            </div>
+            ${buildMetric("Recuperação estimada com resposta imediata (mês)", s.recuperavelMes, colorClass)}
+            ${buildMetric("Recuperação estimada (ano)", s.recuperavelAno)}
+            ${plano}
+            ${ads}
+          </div>
+        `;
+      }
+
+      function calculate() {
+        const contatos = asNumber(el.contatos.value);
+        const ticket = asNumber(el.ticket.value);
+        if (!contatos || !ticket) {
+          showError("Preencha: quantidade de pessoas por mês e valor médio por venda.");
+          return;
+        }
+
+        const pacoteKey = el.planoPacote.value;
+        const pacote = PACOTES[pacoteKey] || { mensal: 0, setup: 0, nome: "Não considerado" };
+        const adsMode = asNumber(el.anuncios.value);
+        const investAds = asNumber(el.investAds.value);
+
+        const scenarios = computeScenarios({
+          seg: el.segmento.value,
+          contatos,
+          ticket,
+          pacote,
+          adsMode,
+          investAds
+        });
+
+        const maxVal = Math.max(scenarios.min.recuperavelMes, scenarios.exp.recuperavelMes, scenarios.pot.recuperavelMes, 1);
+        const pct = (v) => Math.round((v / maxVal) * 100);
+
+        const waLink = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(WA_MESSAGE)}`;
+        const planoTxt = pacoteKey === "0" ? "Não considerado" : `${pacote.nome} (referência)`;
+
+        el.out.innerHTML = `
+          <div class="barWrap">
+            <div class="barRow"><div>Mínimo</div><div class="barTrack"><div class="barFill" id="barMin" style="background:linear-gradient(90deg,rgba(191,255,0,.85),rgba(191,255,0,.35))"></div></div><div id="valMin">${formatBRL(scenarios.min.recuperavelMes)}</div></div>
+            <div class="barRow"><div>Esperado</div><div class="barTrack"><div class="barFill" id="barExp" style="background:linear-gradient(90deg,rgba(0,217,255,.85),rgba(0,217,255,.35))"></div></div><div id="valExp">${formatBRL(scenarios.exp.recuperavelMes)}</div></div>
+            <div class="barRow"><div>Potencial</div><div class="barTrack"><div class="barFill" id="barPot" style="background:linear-gradient(90deg,rgba(255,215,0,.85),rgba(255,215,0,.35))"></div></div><div id="valPot">${formatBRL(scenarios.pot.recuperavelMes)}</div></div>
+          </div>
+
+          ${renderScenario(scenarios.exp, pacoteKey, "cyan", true)}
+
+          <div class="split">
+            ${renderScenario(scenarios.min, pacoteKey, "lime")}
+            ${renderScenario(scenarios.pot, pacoteKey, "gold")}
+          </div>
+
+          <div class="premises">
+            <b>Premissas Speed-to-Lead usadas no cálculo:</b><br>
+            • Peso maior para tempo de resposta (impacto principal em conversão).<br>
+            • Ajuste de cobertura fora do horário comercial.<br>
+            • Ajuste de percepção operacional interna de perda.<br>
+            • Fator combinado aplicado (0 a 1): <b>${scenarios.leadLossFactor.toFixed(2).replace('.', ',')}</b>.
+          </div>
+
+          <div class="interpret">
+            <b>Resumo:</b> Segmento <b>${el.segmento.selectedOptions[0].text}</b>, volume <b>${contatos.toLocaleString("pt-BR")}</b>/mês,
+            ticket <b>${formatBRL(ticket)}</b>, plano <b>${planoTxt}</b>.
+            Cenários são estimativos e dependem da execução real.
+          </div>
+
+          <div class="cta"><a href="${waLink}" target="_blank" rel="noopener">Falar no WhatsApp</a></div>
+        `;
+
+        requestAnimationFrame(() => {
+          const barMin = document.getElementById("barMin");
+          const barExp = document.getElementById("barExp");
+          const barPot = document.getElementById("barPot");
+          if (barMin) barMin.style.width = `${pct(scenarios.min.recuperavelMes)}%`;
+          if (barExp) barExp.style.width = `${pct(scenarios.exp.recuperavelMes)}%`;
+          if (barPot) barPot.style.width = `${pct(scenarios.pot.recuperavelMes)}%`;
+        });
+
+        LAST = {
+          segTxt: el.segmento.selectedOptions[0].text,
+          contatos,
+          ticket,
+          tempoTxt: el.tempo.selectedOptions[0].text,
+          fhTxt: el.foraHorario.selectedOptions[0].text,
+          percTxt: el.percepcao.selectedOptions[0].text,
+          planoTxt,
+          modoTxt: el.ultra.checked ? "Ultraconservador" : "Padrão",
+          investAds,
+          adsTxt: adsMode === 2 ? "Sim, todo mês" : adsMode === 1 ? "Às vezes" : "Não",
+          esperado: scenarios.exp
+        };
+
+        el.cardResultado.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function copyShortSummary() {
+        if (!LAST) {
+          showError("Faça um cálculo primeiro.");
+          return;
+        }
+        const e = LAST.esperado;
+        copyWithFallback([
+          "CPA™ — WaveBRAinBot",
+          `Segmento: ${LAST.segTxt}`,
+          `Pessoas/mês: ${LAST.contatos.toLocaleString("pt-BR")} | Valor: ${formatBRL(LAST.ticket)}`,
+          `Resposta: ${LAST.tempoTxt} | Fora do horário: ${LAST.fhTxt}`,
+          `Cenário (Esperado): ${formatBRL(e.recuperavelMes)}/mês | ${formatBRL(e.recuperavelAno)}/ano`,
+          `Plano: ${LAST.planoTxt} | Modo: ${LAST.modoTxt}`,
+          "Obs.: estimativas baseadas nas informações fornecidas."
+        ].join("\n"));
+      }
+
+      function copyFullSummary() {
+        if (!LAST) {
+          showError("Faça um cálculo primeiro.");
+          return;
+        }
+        const e = LAST.esperado;
+        copyWithFallback(
+`CPA™ — Calculadora de Performance do Atendimento (WaveBRAinBot)
+• Segmento: ${LAST.segTxt}
+• Pessoas/mês: ${LAST.contatos.toLocaleString("pt-BR")}
+• Valor médio: ${formatBRL(LAST.ticket)}
+• Resposta média: ${LAST.tempoTxt}
+• Fora do horário: ${LAST.fhTxt}
+• Perda percebida: ${LAST.percTxt}
+• Anúncios: ${LAST.adsTxt}${LAST.investAds > 0 ? ` (${formatBRL(LAST.investAds)}/mês)` : ""}
+• Plano: ${LAST.planoTxt}
+• Modo: ${LAST.modoTxt}
+
+Cenário: ESPERADO
+• Recuperação (mês): ${formatBRL(e.recuperavelMes)}
+• Recuperação (ano): ${formatBRL(e.recuperavelAno)}
+• Primeiro mês (plano + setup): ${formatBRL(e.primeiroMes)}
+• A partir do 2º mês: ${formatBRL(e.segundoMes)}
+• Ano 1 (plano + setup): ${formatBRL(e.ano1)}
+
+Obs.: Estimativas baseadas nas informações fornecidas.`
+        );
+      }
+
+      el.btnCalcular.addEventListener("click", calculate);
+      el.btnCopiarCurto.addEventListener("click", copyShortSummary);
+      el.btnCopiarCompleto.addEventListener("click", copyFullSummary);
+      el.btnSalvarPDF.addEventListener("click", () => window.print());
+
+      el.anuncios.addEventListener("change", () => {
+        el.adsBox.classList.toggle("hidden", asNumber(el.anuncios.value) === 0);
+      });
+
+      [el.contatos, el.ticket].forEach((input) => {
+        input.addEventListener("keydown", (ev) => {
+          if (ev.key === "Enter") {
+            ev.preventDefault();
+            calculate();
+          }
+        });
+      });
+
+      window.CPA_HELPER = {
+        calculate,
+        copyShortSummary,
+        copyFullSummary,
+        get LAST() {
+          return LAST;
+        }
+      };
+    })();
+  </script>
+</body>
+</html>
