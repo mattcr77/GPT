@@ -1,0 +1,120 @@
+{
+  "name": "WAVE-WPP_ERROR_FINAL",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "error_trigger",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        260,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "owner_remote_jid",
+              "type": "string",
+              "value": "5513996663009@s.whatsapp.net"
+            },
+            {
+              "name": "workflow_name",
+              "type": "string",
+              "value": "={{ $json.workflow?.name || 'workflow_desconhecido' }}"
+            },
+            {
+              "name": "node_name",
+              "type": "string",
+              "value": "={{ $json.execution?.lastNodeExecuted || 'node_desconhecido' }}"
+            },
+            {
+              "name": "error_message",
+              "type": "string",
+              "value": "={{ ($json.error?.message || $json.errorMessage || 'erro desconhecido').slice(0,500) }}"
+            },
+            {
+              "name": "execution_id",
+              "type": "string",
+              "value": "={{ $json.execution?.id || 'sem_execution_id' }}"
+            },
+            {
+              "name": "masked_phone",
+              "type": "string",
+              "value": "={{ $json.execution?.data?.resultData?.lastNodeExecuted || 'n/a' }}"
+            },
+            {
+              "name": "owner_text",
+              "type": "string",
+              "value": "={{ '⚠️ ERRO n8n\\nworkflow: ' + ($json.workflow?.name || 'workflow_desconhecido') + '\\nnode: ' + ($json.execution?.lastNodeExecuted || 'node_desconhecido') + '\\nexec: ' + ($json.execution?.id || 'sem_execution_id') + '\\nmasked_phone: ' + ($json.execution?.data?.resultData?.lastNodeExecuted || 'n/a') + '\\nmsg: ' + (($json.error?.message || $json.errorMessage || 'erro desconhecido').slice(0,500)) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "compose_alert",
+      "name": "Monta erro mascarado",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        500,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "Teste",
+        "remoteJid": "={{ $json.owner_remote_jid }}",
+        "messageText": "={{ $json.owner_text }}",
+        "options_message": {}
+      },
+      "id": "send_error_owner",
+      "name": "Envia erro ao Brasileiro",
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        740,
+        260
+      ],
+      "continueOnFail": true,
+      "credentials": {
+        "evolutionApi": {
+          "id": "tjZO5ucs1d6dKQLa",
+          "name": "evolution_cloudfy"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Monta erro mascarado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta erro mascarado": {
+      "main": [
+        [
+          {
+            "node": "Envia erro ao Brasileiro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
