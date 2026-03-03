@@ -65,6 +65,33 @@
       html { scroll-behavior: auto !important; }
     }
 
+    .toast {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translate(-50%, -12px);
+      z-index: 9999;
+      min-width: 220px;
+      max-width: calc(100vw - 24px);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 800;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms var(--ease), transform 180ms var(--ease);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(9, 14, 35, 0.95);
+      color: var(--txt);
+      text-align: center;
+      backdrop-filter: blur(8px);
+    }
+
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .toast.success { border-color: rgba(191, 255, 0, 0.4); background: rgba(35, 53, 6, 0.95); }
+    .toast.error { border-color: rgba(255, 95, 95, 0.5); background: rgba(60, 8, 8, 0.95); }
+    .toast.info { border-color: rgba(0, 217, 255, 0.4); background: rgba(7, 30, 46, 0.95); }
+
     .wrap { max-width: 1120px; margin: 0 auto; padding: 24px; }
     .top {
       display: flex;
@@ -141,7 +168,11 @@
       outline: none;
     }
 
-    .micro { margin-top: 7px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .isInvalid {
+      border-color: rgba(255, 95, 95, 0.7) !important;
+      box-shadow: 0 0 0 3px rgba(255, 95, 95, 0.18) !important;
+    }
+
     .row { display: flex; justify-content: center; margin-top: 8px; }
 
     .toggle {
@@ -173,8 +204,17 @@
       margin-top: 4px;
     }
 
-    .actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin-top: 10px; }
-    .btnSecondary { border: 1px solid rgba(0, 217, 255, 0.28); background: rgba(0, 217, 255, 0.1); }
+    .actions { margin-top: 10px; }
+    .btnSecondary {
+      width: 100%;
+      border: 1px solid rgba(0, 217, 255, 0.28);
+      background: rgba(0, 217, 255, 0.1);
+    }
+
+    .btnSecondary[disabled] {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
 
     .results { display: grid; gap: 10px; }
     .scenario {
@@ -248,20 +288,12 @@
     }
 
     .closing { margin-top: 10px; text-align: center; font-weight: 950; }
-    .errorBanner {
-      margin-top: 10px;
-      padding: 10px 12px;
-      background: rgba(255, 0, 0, 0.12);
-      border: 1px solid rgba(255, 0, 0, 0.18);
-      border-radius: 10px;
-      color: #ffdcdc;
-      font-weight: 700;
-    }
-
     .hidden { display: none; }
   </style>
 </head>
 <body>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
   <div class="wrap">
     <div class="top">
       <div>
@@ -295,13 +327,13 @@
         </div>
 
         <div class="field">
-          <label for="contatos">Quantas pessoas pedem agendamento, orçamento ou compra por mês?</label>
-          <input id="contatos" type="number" min="0" step="1" placeholder="Ex.: 120" />
+          <label for="contatos">Quantos novos contatos (leads) chegam por mês pedindo informações, orçamento ou agendamento?</label>
+          <input id="contatos" type="text" inputmode="numeric" pattern="[0-9.,\sR$]*" placeholder="Ex.: 120" />
         </div>
 
         <div class="field">
           <label for="ticket">Em média, quanto vale uma venda fechada? (R$)</label>
-          <input id="ticket" type="number" min="0" step="1" placeholder="Ex.: 700" />
+          <input id="ticket" type="text" inputmode="decimal" pattern="[0-9.,\sR$]*" placeholder="Ex.: 700,00" />
         </div>
 
         <div class="field">
@@ -352,7 +384,7 @@
 
         <div class="field hidden" id="adsBox">
           <label for="investAds">Quanto você investe por mês em anúncios? (R$)</label>
-          <input id="investAds" type="number" min="0" step="1" placeholder="Ex.: 3000" />
+          <input id="investAds" type="text" inputmode="decimal" pattern="[0-9.,\sR$]*" placeholder="Ex.: 3.000,00" />
         </div>
 
         <div class="field">
@@ -368,12 +400,8 @@
         <button class="btn" id="btnCalcular">Calcular desempenho</button>
 
         <div class="actions">
-          <button class="btnSecondary" id="btnCopiarCurto">Copiar resumo curto</button>
-          <button class="btnSecondary" id="btnCopiarCompleto">Copiar resumo completo</button>
-          <button class="btnSecondary" id="btnSalvarPDF">Salvar em PDF</button>
+          <button class="btnSecondary" id="btnCopiarResumo" disabled>Copiar resumo</button>
         </div>
-
-        <div id="errorContainer"></div>
       </div>
 
       <div class="card" id="cardResultado">
@@ -440,64 +468,107 @@
         adsBox: document.getElementById("adsBox"),
         planoPacote: document.getElementById("planoPacote"),
         btnCalcular: document.getElementById("btnCalcular"),
-        btnCopiarCurto: document.getElementById("btnCopiarCurto"),
-        btnCopiarCompleto: document.getElementById("btnCopiarCompleto"),
-        btnSalvarPDF: document.getElementById("btnSalvarPDF"),
+        btnCopiarResumo: document.getElementById("btnCopiarResumo"),
         out: document.getElementById("out"),
-        errorContainer: document.getElementById("errorContainer"),
-        cardResultado: document.getElementById("cardResultado")
+        cardResultado: document.getElementById("cardResultado"),
+        toast: document.getElementById("toast")
       };
 
-      const CURRENCY = new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-        maximumFractionDigits: 0
-      });
+      const safeCurrency = (() => {
+        try {
+          return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+        } catch (e) {
+          return null;
+        }
+      })();
 
       let LAST = null;
+      let toastTid = null;
 
-      const formatBRL = (n) => CURRENCY.format(Math.round(n));
       const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
-      const asNumber = (v) => Number(v || 0);
+
+      function formatBRL(n) {
+        const v = Math.round(Number(n) || 0);
+        if (safeCurrency) return safeCurrency.format(v);
+        return `R$ ${v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+      }
+
+      function parseBRNumber(v) {
+        if (typeof v === "number") return Number.isFinite(v) ? v : NaN;
+        if (v == null) return NaN;
+
+        let cleaned = String(v)
+          .replace(/R\$/gi, "")
+          .replace(/\s+/g, "")
+          .trim();
+
+        if (!cleaned) return NaN;
+
+        const hasDot = cleaned.includes(".");
+        const hasComma = cleaned.includes(",");
+
+        if (hasDot && hasComma) {
+          cleaned = cleaned.replace(/\./g, "").replace(/,/g, ".");
+        } else if (hasComma) {
+          cleaned = cleaned.replace(/\./g, "").replace(/,/g, ".");
+        } else if (hasDot) {
+          if (/^\d{1,3}(\.\d{3})+$/.test(cleaned)) {
+            cleaned = cleaned.replace(/\./g, "");
+          }
+        }
+
+        const n = Number(cleaned);
+        return Number.isFinite(n) ? n : NaN;
+      }
+
+      const asNumber = (v) => {
+        const n = parseBRNumber(v);
+        return Number.isFinite(n) ? n : 0;
+      };
 
       function approxText(n) {
         const abs = Math.abs(n);
         if (abs < 1000) return "";
-        if (abs >= 1_000_000) {
-          return `≈ ${(abs / 1_000_000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mi`;
-        }
+        if (abs >= 1_000_000) return `≈ ${(abs / 1_000_000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mi`;
         return `≈ ${(abs / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mil`;
       }
 
-      function showError(message, timeout = 4200) {
-        el.errorContainer.innerHTML = `<div class="errorBanner" role="alert">${message}</div>`;
-        clearTimeout(showError._tid);
-        showError._tid = setTimeout(() => {
-          el.errorContainer.innerHTML = "";
+      function showToast(message, type = "info", timeout = 2500) {
+        if (toastTid) clearTimeout(toastTid);
+        el.toast.textContent = message;
+        el.toast.className = `toast ${type} show`;
+        toastTid = setTimeout(() => {
+          el.toast.className = "toast";
         }, timeout);
       }
 
+      function clearInvalid(input) {
+        input.classList.remove("isInvalid");
+      }
+
+      function markInvalid(input) {
+        input.classList.add("isInvalid");
+        input.focus();
+      }
+
       function copyWithFallback(text) {
-        const manualCopy = () => {
-          const result = window.prompt("Copie manualmente:", text);
-          if (result === null) {
-            showError("Cópia cancelada.");
-            return;
-          }
-          showError("Copiado.");
+        const manual = () => {
+          const r = window.prompt("Copie manualmente:", text);
+          if (r === null) showToast("Cópia cancelada.", "info", 2200);
+          else showToast("Copiado.", "success");
         };
 
         if (!navigator.clipboard) {
-          showError("Não foi possível copiar automaticamente.");
-          manualCopy();
+          showToast("Não foi possível copiar automaticamente.", "error", 2800);
+          manual();
           return;
         }
 
         navigator.clipboard.writeText(text).then(
-          () => showError("Copiado."),
+          () => showToast("Copiado.", "success"),
           () => {
-            showError("Não foi possível copiar automaticamente.");
-            manualCopy();
+            showToast("Não foi possível copiar automaticamente.", "error", 2800);
+            manual();
           }
         );
       }
@@ -532,7 +603,6 @@
         const offHoursFactor = OFF_HOURS_FACTORS[el.foraHorario.value] ?? 0.18;
         const perceptionFactor = PERCEPTION_FACTORS[el.percepcao.value] ?? 0.1;
 
-        // Modelo inspirado em Speed-to-Lead: tempo de resposta tem maior peso.
         let combined = tempoFactor * 0.62 + offHoursFactor * 0.23 + perceptionFactor * 0.15;
         if (el.ultra.checked) combined *= 0.75;
         return clamp(combined, 0.04, 0.9);
@@ -542,8 +612,7 @@
         const { seg, contatos, ticket, pacote, adsMode, investAds } = inputs;
         const bases = BASES[seg] || BASES.outros;
         const leadLossFactor = calcLeadLossFactor();
-
-        const scales = { min: 0.7, exp: 1.0, pot: 1.3 };
+        const scales = { min: 0.7, exp: 1, pot: 1.3 };
 
         function calcScenario(label, baseRate, scale) {
           const baseReceita = contatos * baseRate * ticket;
@@ -605,143 +674,154 @@
       }
 
       function calculate() {
-        const contatos = asNumber(el.contatos.value);
-        const ticket = asNumber(el.ticket.value);
-        if (!contatos || !ticket) {
-          showError("Preencha: quantidade de pessoas por mês e valor médio por venda.");
-          return;
+        try {
+          const contatosN = parseBRNumber(el.contatos.value);
+          const ticketN = parseBRNumber(el.ticket.value);
+
+          clearInvalid(el.contatos);
+          clearInvalid(el.ticket);
+
+          if (!Number.isFinite(contatosN) || contatosN <= 0) {
+            markInvalid(el.contatos);
+            showToast("Informe um número válido de contatos por mês.", "error", 3200);
+            return;
+          }
+
+          if (!Number.isFinite(ticketN) || ticketN <= 0) {
+            markInvalid(el.ticket);
+            showToast("Informe um valor médio de venda válido.", "error", 3200);
+            return;
+          }
+
+          const contatos = asNumber(el.contatos.value);
+          const ticket = asNumber(el.ticket.value);
+          const pacoteKey = el.planoPacote.value;
+          const pacote = PACOTES[pacoteKey] || { mensal: 0, setup: 0, nome: "Não considerado" };
+          const adsMode = asNumber(el.anuncios.value);
+          const investAds = asNumber(el.investAds.value);
+
+          const scenarios = computeScenarios({
+            seg: el.segmento.value,
+            contatos,
+            ticket,
+            pacote,
+            adsMode,
+            investAds
+          });
+
+          const maxVal = Math.max(scenarios.min.recuperavelMes, scenarios.exp.recuperavelMes, scenarios.pot.recuperavelMes, 1);
+          const pct = (v) => Math.round((v / maxVal) * 100);
+          const waLink = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(WA_MESSAGE)}`;
+          const planoTxt = pacoteKey === "0" ? "Não considerado" : `${pacote.nome} (referência)`;
+
+          el.out.innerHTML = `
+            <div class="barWrap">
+              <div class="barRow"><div>Mínimo</div><div class="barTrack"><div class="barFill" id="barMin" style="background:linear-gradient(90deg,rgba(191,255,0,.85),rgba(191,255,0,.35))"></div></div><div id="valMin">${formatBRL(scenarios.min.recuperavelMes)}</div></div>
+              <div class="barRow"><div>Esperado</div><div class="barTrack"><div class="barFill" id="barExp" style="background:linear-gradient(90deg,rgba(0,217,255,.85),rgba(0,217,255,.35))"></div></div><div id="valExp">${formatBRL(scenarios.exp.recuperavelMes)}</div></div>
+              <div class="barRow"><div>Potencial</div><div class="barTrack"><div class="barFill" id="barPot" style="background:linear-gradient(90deg,rgba(255,215,0,.85),rgba(255,215,0,.35))"></div></div><div id="valPot">${formatBRL(scenarios.pot.recuperavelMes)}</div></div>
+            </div>
+
+            ${renderScenario(scenarios.exp, pacoteKey, "cyan", true)}
+
+            <div class="split">
+              ${renderScenario(scenarios.min, pacoteKey, "lime")}
+              ${renderScenario(scenarios.pot, pacoteKey, "gold")}
+            </div>
+
+            <div class="premises">
+              <b>Premissas Speed-to-Lead usadas no cálculo:</b><br>
+              • Peso maior para tempo de resposta (impacto principal em conversão).<br>
+              • Ajuste de cobertura fora do horário comercial.<br>
+              • Ajuste de percepção operacional interna de perda.<br>
+              • Fator combinado aplicado (0 a 1): <b>${scenarios.leadLossFactor.toFixed(2).replace('.', ',')}</b>.
+            </div>
+
+            <div class="interpret">
+              <b>Resumo:</b> Segmento <b>${el.segmento.selectedOptions[0].text}</b>, volume <b>${contatos.toLocaleString("pt-BR")}</b>/mês,
+              ticket <b>${formatBRL(ticket)}</b>, plano <b>${planoTxt}</b>.
+              Cenários são estimativos e dependem da execução real.
+            </div>
+
+            <div class="cta"><a href="${waLink}" target="_blank" rel="noopener">Falar no WhatsApp</a></div>
+          `;
+
+          requestAnimationFrame(() => {
+            const barMin = document.getElementById("barMin");
+            const barExp = document.getElementById("barExp");
+            const barPot = document.getElementById("barPot");
+            if (barMin) barMin.style.width = `${pct(scenarios.min.recuperavelMes)}%`;
+            if (barExp) barExp.style.width = `${pct(scenarios.exp.recuperavelMes)}%`;
+            if (barPot) barPot.style.width = `${pct(scenarios.pot.recuperavelMes)}%`;
+          });
+
+          LAST = {
+            segTxt: el.segmento.selectedOptions[0].text,
+            contatos,
+            ticket,
+            tempoTxt: el.tempo.selectedOptions[0].text,
+            fhTxt: el.foraHorario.selectedOptions[0].text,
+            percTxt: el.percepcao.selectedOptions[0].text,
+            planoKey: pacoteKey,
+            planoTxt,
+            modoTxt: el.ultra.checked ? "Ultraconservador" : "Padrão",
+            investAds,
+            adsTxt: adsMode === 2 ? "Sim, todo mês" : adsMode === 1 ? "Às vezes" : "Não",
+            esperado: scenarios.exp
+          };
+
+          el.btnCopiarResumo.disabled = false;
+          showToast("Cálculo concluído.", "success", 1800);
+          el.cardResultado.scrollIntoView({ behavior: "smooth", block: "start" });
+        } catch (e) {
+          console.error(e);
+          showToast("Não foi possível calcular. Tente novamente.", "error", 3200);
         }
-
-        const pacoteKey = el.planoPacote.value;
-        const pacote = PACOTES[pacoteKey] || { mensal: 0, setup: 0, nome: "Não considerado" };
-        const adsMode = asNumber(el.anuncios.value);
-        const investAds = asNumber(el.investAds.value);
-
-        const scenarios = computeScenarios({
-          seg: el.segmento.value,
-          contatos,
-          ticket,
-          pacote,
-          adsMode,
-          investAds
-        });
-
-        const maxVal = Math.max(scenarios.min.recuperavelMes, scenarios.exp.recuperavelMes, scenarios.pot.recuperavelMes, 1);
-        const pct = (v) => Math.round((v / maxVal) * 100);
-
-        const waLink = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(WA_MESSAGE)}`;
-        const planoTxt = pacoteKey === "0" ? "Não considerado" : `${pacote.nome} (referência)`;
-
-        el.out.innerHTML = `
-          <div class="barWrap">
-            <div class="barRow"><div>Mínimo</div><div class="barTrack"><div class="barFill" id="barMin" style="background:linear-gradient(90deg,rgba(191,255,0,.85),rgba(191,255,0,.35))"></div></div><div id="valMin">${formatBRL(scenarios.min.recuperavelMes)}</div></div>
-            <div class="barRow"><div>Esperado</div><div class="barTrack"><div class="barFill" id="barExp" style="background:linear-gradient(90deg,rgba(0,217,255,.85),rgba(0,217,255,.35))"></div></div><div id="valExp">${formatBRL(scenarios.exp.recuperavelMes)}</div></div>
-            <div class="barRow"><div>Potencial</div><div class="barTrack"><div class="barFill" id="barPot" style="background:linear-gradient(90deg,rgba(255,215,0,.85),rgba(255,215,0,.35))"></div></div><div id="valPot">${formatBRL(scenarios.pot.recuperavelMes)}</div></div>
-          </div>
-
-          ${renderScenario(scenarios.exp, pacoteKey, "cyan", true)}
-
-          <div class="split">
-            ${renderScenario(scenarios.min, pacoteKey, "lime")}
-            ${renderScenario(scenarios.pot, pacoteKey, "gold")}
-          </div>
-
-          <div class="premises">
-            <b>Premissas Speed-to-Lead usadas no cálculo:</b><br>
-            • Peso maior para tempo de resposta (impacto principal em conversão).<br>
-            • Ajuste de cobertura fora do horário comercial.<br>
-            • Ajuste de percepção operacional interna de perda.<br>
-            • Fator combinado aplicado (0 a 1): <b>${scenarios.leadLossFactor.toFixed(2).replace('.', ',')}</b>.
-          </div>
-
-          <div class="interpret">
-            <b>Resumo:</b> Segmento <b>${el.segmento.selectedOptions[0].text}</b>, volume <b>${contatos.toLocaleString("pt-BR")}</b>/mês,
-            ticket <b>${formatBRL(ticket)}</b>, plano <b>${planoTxt}</b>.
-            Cenários são estimativos e dependem da execução real.
-          </div>
-
-          <div class="cta"><a href="${waLink}" target="_blank" rel="noopener">Falar no WhatsApp</a></div>
-        `;
-
-        requestAnimationFrame(() => {
-          const barMin = document.getElementById("barMin");
-          const barExp = document.getElementById("barExp");
-          const barPot = document.getElementById("barPot");
-          if (barMin) barMin.style.width = `${pct(scenarios.min.recuperavelMes)}%`;
-          if (barExp) barExp.style.width = `${pct(scenarios.exp.recuperavelMes)}%`;
-          if (barPot) barPot.style.width = `${pct(scenarios.pot.recuperavelMes)}%`;
-        });
-
-        LAST = {
-          segTxt: el.segmento.selectedOptions[0].text,
-          contatos,
-          ticket,
-          tempoTxt: el.tempo.selectedOptions[0].text,
-          fhTxt: el.foraHorario.selectedOptions[0].text,
-          percTxt: el.percepcao.selectedOptions[0].text,
-          planoTxt,
-          modoTxt: el.ultra.checked ? "Ultraconservador" : "Padrão",
-          investAds,
-          adsTxt: adsMode === 2 ? "Sim, todo mês" : adsMode === 1 ? "Às vezes" : "Não",
-          esperado: scenarios.exp
-        };
-
-        el.cardResultado.scrollIntoView({ behavior: "smooth", block: "start" });
       }
 
-      function copyShortSummary() {
+      function copySummary() {
         if (!LAST) {
-          showError("Faça um cálculo primeiro.");
+          showToast("Faça um cálculo primeiro.", "info");
           return;
         }
+
         const e = LAST.esperado;
-        copyWithFallback([
+        const lines = [
           "CPA™ — WaveBRAinBot",
           `Segmento: ${LAST.segTxt}`,
-          `Pessoas/mês: ${LAST.contatos.toLocaleString("pt-BR")} | Valor: ${formatBRL(LAST.ticket)}`,
-          `Resposta: ${LAST.tempoTxt} | Fora do horário: ${LAST.fhTxt}`,
-          `Cenário (Esperado): ${formatBRL(e.recuperavelMes)}/mês | ${formatBRL(e.recuperavelAno)}/ano`,
-          `Plano: ${LAST.planoTxt} | Modo: ${LAST.modoTxt}`,
-          "Obs.: estimativas baseadas nas informações fornecidas."
-        ].join("\n"));
-      }
+          `Contatos/mês: ${LAST.contatos.toLocaleString("pt-BR")}`,
+          `Ticket médio: ${formatBRL(LAST.ticket)}`,
+          `Tempo de resposta: ${LAST.tempoTxt}`,
+          `Fora do horário: ${LAST.fhTxt}`,
+          `Perda percebida: ${LAST.percTxt}`,
+          `Modo: ${LAST.modoTxt}`,
+          `Anúncios: ${LAST.adsTxt}${LAST.investAds > 0 ? ` (${formatBRL(LAST.investAds)}/mês)` : ""}`,
+          "",
+          "Cenário principal (Esperado):",
+          `• Recuperação (mês): ${formatBRL(e.recuperavelMes)}`,
+          `• Recuperação (ano): ${formatBRL(e.recuperavelAno)}`
+        ];
 
-      function copyFullSummary() {
-        if (!LAST) {
-          showError("Faça um cálculo primeiro.");
-          return;
+        if (LAST.planoKey !== "0") {
+          lines.push(
+            `• Primeiro mês (plano + setup): ${formatBRL(e.primeiroMes)}`,
+            `• A partir do 2º mês: ${formatBRL(e.segundoMes)}`,
+            `• Ano 1 (plano + setup): ${formatBRL(e.ano1)}`
+          );
         }
-        const e = LAST.esperado;
-        copyWithFallback(
-`CPA™ — Calculadora de Performance do Atendimento (WaveBRAinBot)
-• Segmento: ${LAST.segTxt}
-• Pessoas/mês: ${LAST.contatos.toLocaleString("pt-BR")}
-• Valor médio: ${formatBRL(LAST.ticket)}
-• Resposta média: ${LAST.tempoTxt}
-• Fora do horário: ${LAST.fhTxt}
-• Perda percebida: ${LAST.percTxt}
-• Anúncios: ${LAST.adsTxt}${LAST.investAds > 0 ? ` (${formatBRL(LAST.investAds)}/mês)` : ""}
-• Plano: ${LAST.planoTxt}
-• Modo: ${LAST.modoTxt}
 
-Cenário: ESPERADO
-• Recuperação (mês): ${formatBRL(e.recuperavelMes)}
-• Recuperação (ano): ${formatBRL(e.recuperavelAno)}
-• Primeiro mês (plano + setup): ${formatBRL(e.primeiroMes)}
-• A partir do 2º mês: ${formatBRL(e.segundoMes)}
-• Ano 1 (plano + setup): ${formatBRL(e.ano1)}
-
-Obs.: Estimativas baseadas nas informações fornecidas.`
-        );
+        lines.push("", "Obs.: estimativa baseada nas informações fornecidas.");
+        copyWithFallback(lines.join("\n"));
       }
 
       el.btnCalcular.addEventListener("click", calculate);
-      el.btnCopiarCurto.addEventListener("click", copyShortSummary);
-      el.btnCopiarCompleto.addEventListener("click", copyFullSummary);
-      el.btnSalvarPDF.addEventListener("click", () => window.print());
+      el.btnCopiarResumo.addEventListener("click", copySummary);
 
       el.anuncios.addEventListener("change", () => {
         el.adsBox.classList.toggle("hidden", asNumber(el.anuncios.value) === 0);
+      });
+
+      [el.contatos, el.ticket, el.investAds].forEach((input) => {
+        input.addEventListener("input", () => clearInvalid(input));
       });
 
       [el.contatos, el.ticket].forEach((input) => {
@@ -755,11 +835,9 @@ Obs.: Estimativas baseadas nas informações fornecidas.`
 
       window.CPA_HELPER = {
         calculate,
-        copyShortSummary,
-        copyFullSummary,
-        get LAST() {
-          return LAST;
-        }
+        copySummary,
+        parseBRNumber,
+        get LAST() { return LAST; }
       };
     })();
   </script>
