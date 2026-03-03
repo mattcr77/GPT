@@ -1,0 +1,776 @@
+{
+  "name": "WAVE-WPP_FINAL",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "5ca49874-447c-46fc-9e4a-3a2bc8f98afd",
+        "options": {}
+      },
+      "id": "webhook_in",
+      "name": "Recebe mensagem",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        200,
+        260
+      ],
+      "webhookId": "5ca49874-447c-46fc-9e4a-3a2bc8f98afd"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "event",
+              "value": "={{ $json.body.event }}",
+              "type": "string"
+            },
+            {
+              "name": "remoteJid",
+              "value": "={{ $json.body.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "name": "pushName",
+              "value": "={{ $json.body.data.pushName || 'não informado' }}",
+              "type": "string"
+            },
+            {
+              "name": "messageType",
+              "value": "={{ $json.body.data.messageType }}",
+              "type": "string"
+            },
+            {
+              "name": "messageText",
+              "value": "={{ $json.body.data.message?.conversation || '' }}",
+              "type": "string"
+            },
+            {
+              "name": "messageId",
+              "value": "={{ $json.body.data.key.id || $execution.id }}",
+              "type": "string"
+            },
+            {
+              "name": "conversation_id",
+              "value": "={{ $json.body.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "name": "execution_id",
+              "value": "={{ $execution.id }}",
+              "type": "string"
+            },
+            {
+              "name": "owner_remote_jid",
+              "value": "5513996663009@s.whatsapp.net",
+              "type": "string"
+            },
+            {
+              "name": "masked_phone",
+              "value": "={{ String($json.body.data.key.remoteJid || '').replace(/^(\\d{4})\\d+(\\@.*)$/,'$1****$2') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "normalize",
+      "name": "Normaliza entrada",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        420,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.event }}",
+              "rightValue": "messages.upsert",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "leftValue": "={{ $json.messageType }}",
+              "rightValue": "conversation",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "leftValue": "={{ $json.remoteJid }}",
+              "rightValue": "@g.us",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "valid_filter",
+      "name": "Filtro WhatsApp válido",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        640,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO public.inbound_messages (conversation_id, execution_id, message_id, message_text, push_name, remote_jid, created_at) VALUES ($1,$2,$3,$4,$5,$6,NOW()) ON CONFLICT (conversation_id, message_id) DO NOTHING; INSERT INTO public.conversation_state (conversation_id, latest_execution_id, last_message_at, updated_at) VALUES ($1,$2,NOW(),NOW()) ON CONFLICT (conversation_id) DO UPDATE SET latest_execution_id = EXCLUDED.latest_execution_id, last_message_at = EXCLUDED.last_message_at, updated_at = NOW();",
+        "options": {
+          "queryParameters": "={{ [ $json.conversation_id, $json.execution_id, $json.messageId, $json.messageText, $json.pushName, $json.remoteJid ] }}"
+        }
+      },
+      "id": "upsert_state_inbound",
+      "name": "Upsert estado + inbound",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        880,
+        260
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "wr3KDJ4bIUyeHOOV",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "seconds"
+      },
+      "id": "debounce_wait",
+      "name": "Debounce 30s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1080,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT conversation_id, latest_execution_id, last_message_at FROM public.conversation_state WHERE conversation_id = $1;",
+        "options": {
+          "queryParameters": "={{ [ $('Normaliza entrada').first().json.conversation_id ] }}"
+        }
+      },
+      "id": "check_latest",
+      "name": "Checa última execução",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1280,
+        260
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "wr3KDJ4bIUyeHOOV",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.latest_execution_id }}",
+              "rightValue": "={{ $('Normaliza entrada').first().json.execution_id }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "is_latest",
+      "name": "Sou execução mais recente?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1480,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH base AS ( SELECT $1::text AS conversation_id, $2::timestamptz AS cutoff_ts, $3::text AS remote_jid, $4::text AS push_name, $5::text AS execution_id, $6::text AS owner_remote_jid, $7::text AS masked_phone, $8::text AS message_text ), inbound AS ( SELECT COALESCE(string_agg(im.message_text, E'\\n' ORDER BY im.created_at ASC), '') AS consolidated_text FROM base b LEFT JOIN public.inbound_messages im ON im.conversation_id = b.conversation_id AND im.created_at <= b.cutoff_ts ), mem AS ( SELECT COALESCE(string_agg(x.role || ': ' || x.content, E'\\n' ORDER BY x.created_at ASC), '') AS history_text FROM ( SELECT role, content, created_at FROM public.conversation_history WHERE conversation_id = $1 ORDER BY created_at DESC LIMIT 30 ) x ) SELECT b.conversation_id, b.remote_jid, b.push_name, b.execution_id, b.owner_remote_jid, b.cutoff_ts, m.history_text AS \"historyText\", CASE WHEN trim(i.consolidated_text) <> '' THEN left(i.consolidated_text, 6000) ELSE left(b.message_text, 6000) END AS user_text, encode(digest(b.conversation_id || '::' || CASE WHEN trim(i.consolidated_text) <> '' THEN left(i.consolidated_text, 6000) ELSE left(b.message_text, 6000) END, 'sha256'), 'hex') AS input_hash, b.masked_phone FROM base b CROSS JOIN inbound i CROSS JOIN mem m;",
+        "options": {
+          "queryParameters": "={{ [ $('Normaliza entrada').first().json.conversation_id, $('Checa última execução').first().json.last_message_at, $('Normaliza entrada').first().json.remoteJid, $('Normaliza entrada').first().json.pushName, $('Normaliza entrada').first().json.execution_id, $('Normaliza entrada').first().json.owner_remote_jid, $('Normaliza entrada').first().json.masked_phone, $('Normaliza entrada').first().json.messageText ] }}"
+        }
+      },
+      "id": "build_context",
+      "name": "Monta contexto (SQL)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1700,
+        260
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "wr3KDJ4bIUyeHOOV",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH attempt AS ( INSERT INTO public.response_dedup (conversation_id, dedup_key, response_type, payload_preview, created_at) VALUES ($1,$2,'lead',LEFT($3,200),NOW()) ON CONFLICT (conversation_id, dedup_key, response_type) DO UPDATE SET created_at = EXCLUDED.created_at, payload_preview = EXCLUDED.payload_preview WHERE public.response_dedup.created_at < NOW() - INTERVAL '2 minutes' RETURNING 1 ) SELECT COALESCE((SELECT true FROM attempt), false) AS allowed;",
+        "options": {
+          "queryParameters": "={{ [ $json.conversation_id, $json.input_hash, $json.user_text ] }}"
+        }
+      },
+      "id": "dedup_lead",
+      "name": "Reserva dedup atômica (lead)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1910,
+        260
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "wr3KDJ4bIUyeHOOV",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ !!$json.allowed }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ]
+        }
+      },
+      "id": "dedup_lead_if",
+      "name": "Dedup lead permitido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2120,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ `HISTÓRICO:\n${$json.historyText || 'sem histórico'}\n\nMENSAGEM ATUAL:\n${$json.user_text}` }}",
+        "options": {
+          "systemMessage": "Você é o WAVE da WaveBRAinBot no WhatsApp. Responda APENAS JSON válido sem markdown no formato exato {\"lead_text\":\"...\",\"notify_owner\":true|false,\"owner_summary\":\"...\",\"lead_score\":0}. lead_score deve ser inteiro de 0 a 100. Nunca vaze owner_summary para o lead."
+        }
+      },
+      "id": "agent_json",
+      "name": "AGENTE JSON ESTRITO",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        2330,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "id": "openai_chat",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2330,
+        420
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "q24jGMsqeApVJ4AM",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH s AS (SELECT public.safe_jsonb($1) AS obj) SELECT $2::text AS conversation_id, $3::text AS remote_jid, $4::text AS push_name, $5::text AS execution_id, $6::text AS owner_remote_jid, $7::timestamptz AS cutoff_ts, $8::text AS \"historyText\", $9::text AS user_text, (obj IS NOT NULL) AS is_valid, CASE WHEN obj ? 'lead_text' THEN obj->>'lead_text' ELSE 'Tive um problema rápido aqui. Pode repetir sua última mensagem em 1 linha?' END AS lead_text, CASE WHEN obj ? 'notify_owner' THEN (obj->>'notify_owner')::boolean ELSE true END AS notify_owner, CASE WHEN obj ? 'owner_summary' THEN obj->>'owner_summary' ELSE '⚠️ LLM retornou JSON inválido ou vazio. Verificar prompt/saída.' END AS owner_summary, CASE WHEN obj ? 'lead_score' THEN GREATEST(0, LEAST(100, (obj->>'lead_score')::int)) ELSE 100 END AS lead_score, encode(digest($2::text || '::owner::' || (CASE WHEN obj ? 'owner_summary' THEN obj->>'owner_summary' ELSE 'LLM_INVALID_JSON' END), 'sha256'),'hex') AS owner_hash FROM s;",
+        "options": {
+          "queryParameters": "={{ [ ($json.output || $json.response || $json.text || ''), $('Monta contexto (SQL)').first().json.conversation_id, $('Monta contexto (SQL)').first().json.remote_jid, $('Monta contexto (SQL)').first().json.push_name, $('Monta contexto (SQL)').first().json.execution_id, $('Monta contexto (SQL)').first().json.owner_remote_jid, $('Monta contexto (SQL)').first().json.cutoff_ts, ($('Monta contexto (SQL)').first().json.historyText || ''), ($('Monta contexto (SQL)').first().json.user_text || '') ] }}"
+        }
+      },
+      "id": "validate_json",
+      "name": "Valida JSON + fallback (SQL)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2550,
+        260
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "wr3KDJ4bIUyeHOOV",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT COALESCE(cs.latest_execution_id, $2::text) AS latest_execution_id, $2::text AS execution_id FROM (SELECT 1) t LEFT JOIN public.conversation_state cs ON cs.conversation_id = $1;",
+        "options": {
+          "queryParameters": "={{ [ $json.conversation_id, $json.execution_id ] }}"
+        }
+      },
+      "id": "recheck_latest",
+      "name": "Recheca última execução (pré-envio)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2770,
+        260
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "wr3KDJ4bIUyeHOOV",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.latest_execution_id }}",
+              "rightValue": "={{ $json.execution_id }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "allow_send_if",
+      "name": "Marca allowed pré-envio",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2980,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "Teste",
+        "remoteJid": "={{ $('Valida JSON + fallback (SQL)').first().json.remote_jid }}",
+        "messageText": "={{ $('Valida JSON + fallback (SQL)').first().json.lead_text }}",
+        "options_message": {}
+      },
+      "id": "send_lead",
+      "name": "Envia 1 mensagem ao lead",
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        3200,
+        220
+      ],
+      "credentials": {
+        "evolutionApi": {
+          "id": "tjZO5ucs1d6dKQLa",
+          "name": "evolution_cloudfy"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $('Valida JSON + fallback (SQL)').first().json.notify_owner }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            },
+            {
+              "leftValue": "={{ $('Valida JSON + fallback (SQL)').first().json.lead_score }}",
+              "rightValue": 70,
+              "operator": {
+                "type": "number",
+                "operation": "largerEqual"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "notify_owner_if",
+      "name": "Notifica owner?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3200,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH attempt AS ( INSERT INTO public.response_dedup (conversation_id, dedup_key, response_type, payload_preview, created_at) VALUES ($1,$2,'owner',LEFT($3,200),NOW()) ON CONFLICT (conversation_id, dedup_key, response_type) DO UPDATE SET created_at = EXCLUDED.created_at, payload_preview = EXCLUDED.payload_preview WHERE public.response_dedup.created_at < NOW() - INTERVAL '2 minutes' RETURNING 1 ) SELECT COALESCE((SELECT true FROM attempt), false) AS allowed;",
+        "options": {
+          "queryParameters": "={{ [ $('Valida JSON + fallback (SQL)').first().json.conversation_id, $('Valida JSON + fallback (SQL)').first().json.owner_hash, $('Valida JSON + fallback (SQL)').first().json.owner_summary ] }}"
+        }
+      },
+      "id": "dedup_owner",
+      "name": "Reserva dedup atômica (owner)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3420,
+        360
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "wr3KDJ4bIUyeHOOV",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ !!$json.allowed }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dedup_owner_if",
+      "name": "Dedup owner permitido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3630,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "Teste",
+        "remoteJid": "5513996663009@s.whatsapp.net",
+        "messageText": "={{ $('Valida JSON + fallback (SQL)').first().json.owner_summary }}",
+        "options_message": {}
+      },
+      "id": "send_owner",
+      "name": "Envia alerta ao Brasileiro",
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        3840,
+        360
+      ],
+      "credentials": {
+        "evolutionApi": {
+          "id": "tjZO5ucs1d6dKQLa",
+          "name": "evolution_cloudfy"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO public.conversation_history (conversation_id, role, content, created_at) VALUES ($1,'user',$2,NOW()),($1,'assistant',$3,NOW()); DELETE FROM public.conversation_history WHERE conversation_id = $1 AND id NOT IN (SELECT id FROM public.conversation_history WHERE conversation_id = $1 ORDER BY created_at DESC LIMIT 30); DELETE FROM public.inbound_messages WHERE conversation_id = $1 AND created_at <= $4;",
+        "options": {
+          "queryParameters": "={{ [ $('Valida JSON + fallback (SQL)').first().json.conversation_id, $('Valida JSON + fallback (SQL)').first().json.user_text, $('Valida JSON + fallback (SQL)').first().json.lead_text, $('Valida JSON + fallback (SQL)').first().json.cutoff_ts ] }}"
+        }
+      },
+      "id": "save_memory",
+      "name": "Salva memória + clean buffer",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3420,
+        220
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "wr3KDJ4bIUyeHOOV",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Recebe mensagem": {
+      "main": [
+        [
+          {
+            "node": "Normaliza entrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normaliza entrada": {
+      "main": [
+        [
+          {
+            "node": "Filtro WhatsApp válido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtro WhatsApp válido": {
+      "main": [
+        [
+          {
+            "node": "Upsert estado + inbound",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert estado + inbound": {
+      "main": [
+        [
+          {
+            "node": "Debounce 30s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Debounce 30s": {
+      "main": [
+        [
+          {
+            "node": "Checa última execução",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checa última execução": {
+      "main": [
+        [
+          {
+            "node": "Sou execução mais recente?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sou execução mais recente?": {
+      "main": [
+        [
+          {
+            "node": "Monta contexto (SQL)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta contexto (SQL)": {
+      "main": [
+        [
+          {
+            "node": "Reserva dedup atômica (lead)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reserva dedup atômica (lead)": {
+      "main": [
+        [
+          {
+            "node": "Dedup lead permitido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dedup lead permitido?": {
+      "main": [
+        [
+          {
+            "node": "AGENTE JSON ESTRITO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AGENTE JSON ESTRITO",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AGENTE JSON ESTRITO": {
+      "main": [
+        [
+          {
+            "node": "Valida JSON + fallback (SQL)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valida JSON + fallback (SQL)": {
+      "main": [
+        [
+          {
+            "node": "Recheca última execução (pré-envio)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recheca última execução (pré-envio)": {
+      "main": [
+        [
+          {
+            "node": "Marca allowed pré-envio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Marca allowed pré-envio": {
+      "main": [
+        [
+          {
+            "node": "Envia 1 mensagem ao lead",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notifica owner?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envia 1 mensagem ao lead": {
+      "main": [
+        [
+          {
+            "node": "Salva memória + clean buffer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notifica owner?": {
+      "main": [
+        [
+          {
+            "node": "Reserva dedup atômica (owner)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reserva dedup atômica (owner)": {
+      "main": [
+        [
+          {
+            "node": "Dedup owner permitido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dedup owner permitido?": {
+      "main": [
+        [
+          {
+            "node": "Envia alerta ao Brasileiro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1"
+}
