@@ -1,0 +1,12 @@
+{
+  "tenant_id": "demo_clinica",
+  "canal_origem": "whatsapp",
+  "lead_id": "lead_001",
+  "nome": "Maria Oliveira",
+  "telefone": "+5511912345678",
+  "mensagem": "Oi, quero saber sobre implante",
+  "procedimento": "implante",
+  "urgencia": "media",
+  "convenio": "particular",
+  "horario_preferido": "manhã"
+}

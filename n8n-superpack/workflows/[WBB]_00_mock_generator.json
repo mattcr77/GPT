@@ -1,0 +1,201 @@
+{
+  "name": "[WBB] 00 - Mock Generator",
+  "nodes": [
+    {
+      "id": "b5b336d3-4b96-4a3d-947d-761381063ed6",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "17803654-4a21-4296-8fc7-2fe275864b94",
+      "name": "Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        180,
+        80
+      ],
+      "parameters": {
+        "width": 420,
+        "height": 160,
+        "content": "Mock Generator: dispara eventos fake para testar fluxos 01, 02 e 03."
+      }
+    },
+    {
+      "id": "9c42c34e-d992-448a-a69e-180b3835b683",
+      "name": "Generate Mock Event",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        450,
+        300
+      ],
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "tenant_id",
+              "value": "demo_clinica"
+            },
+            {
+              "name": "canal_origem",
+              "value": "whatsapp"
+            },
+            {
+              "name": "nome",
+              "value": "Maria Teste"
+            },
+            {
+              "name": "telefone",
+              "value": "+5511911111111"
+            },
+            {
+              "name": "mensagem",
+              "value": "Quero avaliar implante dentário"
+            },
+            {
+              "name": "urgencia",
+              "value": "media"
+            },
+            {
+              "name": "procedimento",
+              "value": "implante"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "d9a86960-cdee-4a97-a3d0-d7b1b001627e",
+      "name": "Emit to Lead Intake",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        220
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.BASE_WEBHOOK_URL + \"/webhook/wbb-lead-intake\"}}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{$json}}"
+      }
+    },
+    {
+      "id": "f24bdbec-3119-4953-b339-d70ba86faaba",
+      "name": "Emit to Qualificacao",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        320
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.BASE_WEBHOOK_URL + \"/webhook/wbb-qualificacao\"}}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{$json}}"
+      }
+    },
+    {
+      "id": "11d439f8-7a7b-4ce4-b852-8353443c5036",
+      "name": "Emit to Handoff",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        420
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.BASE_WEBHOOK_URL + \"/webhook/wbb-handoff\"}}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{$json}}"
+      }
+    },
+    {
+      "id": "09380340-4105-4946-9728-057562cf4a2d",
+      "name": "Mock Summary",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        940,
+        300
+      ],
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "resultado",
+              "value": "Mock events enviados para 3 fluxos"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Generate Mock Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Mock Event": {
+      "main": [
+        [
+          {
+            "node": "Emit to Lead Intake",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Emit to Qualificacao",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Emit to Handoff",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Emit to Handoff": {
+      "main": [
+        [
+          {
+            "node": "Mock Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

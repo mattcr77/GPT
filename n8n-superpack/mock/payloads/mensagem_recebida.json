@@ -1,0 +1,9 @@
+{
+  "tenant_id": "demo_clinica",
+  "chat_id": "cw_8891",
+  "contact_name": "Carlos Silva",
+  "phone": "+5511988887777",
+  "message": "Preciso falar com humano agora",
+  "pediu_humano": true,
+  "timestamp": "2026-01-20T14:32:00-03:00"
+}
