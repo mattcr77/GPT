@@ -1,0 +1,10 @@
+{
+  "assumptions": [
+    {
+      "campo": "leads_mes",
+      "valor_assumido": 80,
+      "faixa": "60-120",
+      "como_validar": "Somar conversas no WhatsApp/Instagram/site"
+    }
+  ]
+}

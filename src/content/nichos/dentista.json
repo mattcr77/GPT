@@ -1,0 +1,7 @@
+{
+  "dores_comuns": ["Mensagens não respondidas fora do horário comercial", "Demora no retorno de orçamentos", "No-show por falta de confirmação"],
+  "objecoes_comuns": ["Minha recepção já responde", "Só quero preço"],
+  "respostas_eticas": ["A recepção continua no controle; o sistema reduz fila de resposta e organiza contexto", "Preço sem contexto gera perda; triagem rápida melhora assertividade"],
+  "perguntas_qualificacao": ["Quais procedimentos mais rentáveis da clínica?", "Qual prazo máximo aceitável para primeira resposta?"],
+  "cta_agendamento": "Podemos agendar uma análise de 20 minutos para mapear gargalos de resposta e follow-up?"
+}
