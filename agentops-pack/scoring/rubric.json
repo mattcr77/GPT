@@ -1,0 +1,12 @@
+{
+  "version": "1.0",
+  "criteria": [
+    {"name": "clareza_objetividade", "label": "Clareza e objetividade", "max": 25},
+    {"name": "qualificacao_minima", "label": "Qualificação mínima", "max": 25},
+    {"name": "conducao_proximo_passo", "label": "Condução para próximo passo", "max": 20},
+    {"name": "handoff_humano", "label": "Handoff humano quando necessário", "max": 10},
+    {"name": "tom_premium_util", "label": "Tom premium e útil", "max": 10},
+    {"name": "compliance_seguranca", "label": "Compliance/segurança", "max": 10}
+  ],
+  "total": 100
+}

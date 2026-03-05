@@ -1,0 +1,1186 @@
+[
+  {
+    "id": "fisio_001_lead_quente_preco",
+    "suite": "smoke",
+    "nicho": "fisio",
+    "objetivo": "agendar",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Quanto fica uma consulta? quero fechar hoje",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "low"
+  },
+  {
+    "id": "fisio_002_agendar_hoje",
+    "suite": "smoke",
+    "nicho": "fisio",
+    "objetivo": "agendar",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Quero agendar hoje, tem horário?",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "low"
+  },
+  {
+    "id": "fisio_003_convenio",
+    "suite": "smoke",
+    "nicho": "fisio",
+    "objetivo": "qualificar",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Vocês atendem convênio Unimed?",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "med"
+  },
+  {
+    "id": "fisio_004_objecao_caro",
+    "suite": "smoke",
+    "nicho": "fisio",
+    "objetivo": "qualificar",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Achei caro, tem algo melhor?",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "low"
+  },
+  {
+    "id": "fisio_005_vou_pensar",
+    "suite": "smoke",
+    "nicho": "fisio",
+    "objetivo": "followup",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Vou pensar e depois te falo.",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "low"
+  },
+  {
+    "id": "fisio_006_manda_whats",
+    "suite": "smoke",
+    "nicho": "fisio",
+    "objetivo": "qualificar",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Me manda no Whats os detalhes.",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "med"
+  },
+  {
+    "id": "fisio_007_fora_horario",
+    "suite": "smoke",
+    "nicho": "fisio",
+    "objetivo": "followup",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [
+      {
+        "role": "lead",
+        "content": "Boa noite"
+      }
+    ],
+    "mensagem_do_lead": "São 23h, consegue me atender agora?",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "low"
+  },
+  {
+    "id": "fisio_008_urgencia_dor",
+    "suite": "smoke",
+    "nicho": "fisio",
+    "objetivo": "handoff",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Estou com dor forte agora, preciso de ajuda urgente!",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "high"
+  },
+  {
+    "id": "fisio_009_pedido_humano",
+    "suite": "smoke",
+    "nicho": "fisio",
+    "objetivo": "handoff",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Quero falar com atendente humano.",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "high"
+  },
+  {
+    "id": "fisio_010_msg_curta_oi",
+    "suite": "smoke",
+    "nicho": "fisio",
+    "objetivo": "qualificar",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "oi",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "low"
+  },
+  {
+    "id": "fisio_011_audio_sem_transcricao",
+    "suite": "smoke",
+    "nicho": "fisio",
+    "objetivo": "qualificar",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "[audio]",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "low"
+  },
+  {
+    "id": "fisio_012_duplicado_lead",
+    "suite": "smoke",
+    "nicho": "fisio",
+    "objetivo": "followup",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [
+      {
+        "role": "lead",
+        "content": "Oi, pedi orçamento ontem."
+      },
+      {
+        "role": "agent",
+        "content": "Claro, posso ajudar com o agendamento."
+      }
+    ],
+    "mensagem_do_lead": "Voltei, falei com vocês ontem sobre consulta.",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "med"
+  },
+  {
+    "id": "fisio_013_retorno_exame",
+    "suite": "full",
+    "nicho": "fisio",
+    "objetivo": "qualificar",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Tenho resultados de exame, como funciona retorno?",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "low"
+  },
+  {
+    "id": "fisio_014_primeira_consulta",
+    "suite": "full",
+    "nicho": "fisio",
+    "objetivo": "qualificar",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Nunca fui aí, como funciona primeira consulta?",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "low"
+  },
+  {
+    "id": "fisio_015_cancelar",
+    "suite": "full",
+    "nicho": "fisio",
+    "objetivo": "followup",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Preciso cancelar meu horário de amanhã.",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "med"
+  },
+  {
+    "id": "fisio_016_remarcar",
+    "suite": "full",
+    "nicho": "fisio",
+    "objetivo": "followup",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Quero remarcar para sexta à tarde.",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "low"
+  },
+  {
+    "id": "fisio_017_sem_horario_preferido",
+    "suite": "full",
+    "nicho": "fisio",
+    "objetivo": "qualificar",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Tenho agenda flexível, qualquer horário serve.",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "low"
+  },
+  {
+    "id": "fisio_018_com_horario_preferido",
+    "suite": "full",
+    "nicho": "fisio",
+    "objetivo": "agendar",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Só posso depois das 18h, consegue?",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "med"
+  },
+  {
+    "id": "fisio_019_localizacao",
+    "suite": "full",
+    "nicho": "fisio",
+    "objetivo": "qualificar",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Onde fica a clínica?",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "low"
+  },
+  {
+    "id": "fisio_020_forma_pagamento",
+    "suite": "full",
+    "nicho": "fisio",
+    "objetivo": "qualificar",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Aceitam cartão e pix?",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "low"
+  },
+  {
+    "id": "fisio_021_parcelamento",
+    "suite": "full",
+    "nicho": "fisio",
+    "objetivo": "qualificar",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Dá para parcelar o tratamento?",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "med"
+  },
+  {
+    "id": "fisio_022_duracao",
+    "suite": "full",
+    "nicho": "fisio",
+    "objetivo": "qualificar",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Quanto tempo dura a consulta?",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "low"
+  },
+  {
+    "id": "fisio_023_menor_idade",
+    "suite": "full",
+    "nicho": "fisio",
+    "objetivo": "handoff",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Quero agendar para meu filho de 8 anos.",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "low"
+  },
+  {
+    "id": "fisio_024_gestante",
+    "suite": "full",
+    "nicho": "fisio",
+    "objetivo": "handoff",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Estou grávida e tenho dúvidas se posso fazer.",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "med"
+  },
+  {
+    "id": "fisio_025_pos_procedimento",
+    "suite": "full",
+    "nicho": "fisio",
+    "objetivo": "handoff",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Fiz procedimento e agora estou com desconforto.",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "low"
+  },
+  {
+    "id": "fisio_026_sem_resposta_previa",
+    "suite": "full",
+    "nicho": "fisio",
+    "objetivo": "followup",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Vocês ainda atendem essa semana?",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "low"
+  },
+  {
+    "id": "fisio_027_lead_indeciso",
+    "suite": "full",
+    "nicho": "fisio",
+    "objetivo": "qualificar",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Não sei qual procedimento preciso.",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "med"
+  },
+  {
+    "id": "fisio_028_urgencia_moderada",
+    "suite": "full",
+    "nicho": "fisio",
+    "objetivo": "handoff",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Estou com dor desde ontem, o que faço?",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "high"
+  },
+  {
+    "id": "fisio_029_retorno_preco",
+    "suite": "full",
+    "nicho": "fisio",
+    "objetivo": "agendar",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Vi o orçamento, podemos fechar?",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "low"
+  },
+  {
+    "id": "fisio_030_documentos",
+    "suite": "full",
+    "nicho": "fisio",
+    "objetivo": "qualificar",
+    "contexto": "Atendimento WhatsApp para clínica de fisioterapia.",
+    "historico": [],
+    "mensagem_do_lead": "Que documentos preciso levar?",
+    "expected": {
+      "coleta_dados": [
+        "nome",
+        "procedimento",
+        "urgencia",
+        "convenio",
+        "horario"
+      ],
+      "acao": [
+        "perguntar",
+        "oferecer_agenda",
+        "handoff",
+        "followup"
+      ],
+      "tom": [
+        "premium",
+        "claro",
+        "curto"
+      ],
+      "compliance": [
+        "sem_promessa_medica",
+        "sem_sensacionalismo"
+      ]
+    },
+    "red_flags": [
+      "prometeu cura",
+      "não pediu dados",
+      "enrolou"
+    ],
+    "severidade_erro": "med"
+  }
+]

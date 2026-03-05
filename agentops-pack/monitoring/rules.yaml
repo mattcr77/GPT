@@ -1,0 +1,36 @@
+version: 1
+slo:
+  response_time_p95_seconds:
+    target: 120
+    warn_above: 180
+    crit_above: 300
+    description: Tempo de resposta p95 no WhatsApp.
+  handoff_rate:
+    target_max: 0.25
+    warn_above: 0.35
+    crit_above: 0.5
+    description: Taxa de handoff humano alta indica falha de automação/qualificação.
+  stuck_followup_rate:
+    target_max: 0.2
+    warn_above: 0.3
+    crit_above: 0.45
+    description: Follow-up sem avanço por mais de 24h.
+  integration_offline_minutes:
+    target_max: 5
+    warn_above: 15
+    crit_above: 30
+    description: CRM, agenda ou webhook offline.
+
+alerts:
+  - id: response_time_high
+    condition: response_time_p95_seconds > warn_above
+    severity: warning
+  - id: handoff_spike
+    condition: handoff_rate > warn_above
+    severity: warning
+  - id: followup_stuck
+    condition: stuck_followup_rate > warn_above
+    severity: warning
+  - id: integration_offline
+    condition: integration_offline_minutes > warn_above
+    severity: critical
